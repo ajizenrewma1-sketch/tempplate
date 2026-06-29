@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="th" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine Report Workspace</title>
+    
+    <!-- Tailwind CSS for modern utility layout styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Sarabun for ultra-crisp English & Thai typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&family=Sarabun:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Pro alternative via CDN for clean, modern interface icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Sarabun', 'Inter', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'premium': '0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+                        'amber-glow': '0 4px 20px -2px rgba(245, 158, 11, 0.15)',
+                        'rose-glow': '0 4px 20px -2px rgba(244, 63, 94, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Sarabun', 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom scrollbar to keep layout clean and minimal */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        /* Bounce and glow keyframes for premium UI feel */
+        @keyframes subtle-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.95; }
+            50% { transform: scale(1.02); opacity: 1; }
+        }
+        .live-pulse {
+            animation: subtle-pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-emerald-100 selection:text-emerald-900 overflow-hidden">
+
+    <!-- Top premium navigation bar -->
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 transition-all shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
+            
+            <!-- Logo area & brand description -->
+            <div class="flex items-center gap-3.5">
+                <div class="p-2.5 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white rounded-xl shadow-md shadow-emerald-200">
+                    <i class="fa-solid fa-rectangle-list text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
+                        <span>Daily Report Generator</span>
+                        <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded-full border border-slate-200 uppercase tracking-widest">v3.1 PRO</span>
+                    </h1>
+                    <p class="text-xs text-slate-500 font-medium">แผงจัดการข้อมูลรายงานประจำวันแบบรวดเร็วพิเศษ (รองรับนำเข้าไฟล์ .txt)</p>
+                </div>
+            </div>
+            
+            <!-- Quick global action controls -->
+            <div class="flex items-center gap-2.5 self-stretch sm:self-auto justify-end">
+                <button onclick="exportAllTemplates()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all" title="ส่งออกเทมเพลตทั้งหมดเป็นไฟล์สำรอง">
+                    <i class="fa-solid fa-file-export text-slate-400"></i> ส่งออกสำรอง
+                </button>
+                <button onclick="triggerImport()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all" title="นำเข้าไฟล์สำรอง (.json) หรือเทมเพลตดิบ (.txt)">
+                    <i class="fa-solid fa-file-import text-slate-400"></i> นำเข้า
+                </button>
+                <!-- ปรับให้รองรับไฟล์ .txt สำหรับการนำเข้าแบบด่วน -->
+                <input type="file" id="importFileInput" accept=".json, .txt" class="hidden" onchange="handleImport(event)">
+                
+                <span class="h-6 w-[1px] bg-slate-200 block mx-1"></span>
+
+                <button onclick="openNewTemplateModal()" class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md shadow-slate-200 hover:-translate-y-0.5 transition-all duration-200">
+                    <i class="fa-solid fa-plus-circle text-emerald-400"></i> เพิ่มหัวข้อใหม่
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="bg-gradient-to-r from-slate-50 via-white to-slate-50 py-2 px-4 border-b border-slate-100 shrink-0">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+                <div class="flex space-x-1">
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 block shadow-sm"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 block shadow-sm"></span>
+                </div>
+                <span class="text-xs text-slate-400 font-medium">พิมพ์เครื่องหมายจุดสามจุด <span class="font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[11px]">...</span> เพื่อให้ระบบสร้างช่องให้กรอกข้อมูลทันที</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs text-slate-500 font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-emerald-100">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+                    <span id="currentTimeDisplay">--:--:--</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6 overflow-hidden">
+        
+        <!-- LEFT COLUMN: The Yellow Accent Sidebar (Topic selection list) -->
+        <section id="sidebarBox" class="w-full lg:w-[320px] flex flex-col bg-white rounded-2xl border-t-[6px] border-amber-400 shadow-premium shadow-amber-glow transition-all duration-300 overflow-hidden shrink-0">
+            <!-- Sidebar Header with sleek visual icons, count badges, and the close/collapse button -->
+            <div class="p-4 border-b border-slate-100 bg-gradient-to-b from-amber-50/40 to-transparent flex items-center justify-between shrink-0">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <i class="fa-solid fa-folder-open text-xs"></i>
+                    </div>
+                    <h2 class="font-bold text-slate-800 text-sm tracking-wide">รายการและหัวข้อรายงาน</h2>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span id="totalTemplatesCount" class="text-[11px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">0 หัวข้อ</span>
+                    
+                    <!-- Inline collapse/hide button on the Yellow Box directly -->
+                    <button onclick="toggleSidebar()" class="w-6 h-6 rounded-md hover:bg-amber-100 text-amber-600 hover:text-amber-800 flex items-center justify-center transition-all" title="ซ่อนแถบรายการ">
+                        <i class="fa-solid fa-angles-left text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search Filter Bar with crisp styling -->
+            <div class="p-3 border-b border-slate-50 shrink-0">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+                    <input type="text" id="searchBar" oninput="filterTemplates()" placeholder="ค้นหาตามชื่อหัวข้อ..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent transition-all placeholder:text-slate-400">
+                </div>
+            </div>
+
+            <!-- LIST OF TOPICS: Beautiful rounded lists with micro-transitions -->
+            <div id="topicsList" class="flex-1 overflow-y-auto p-2.5 space-y-1.5 max-h-[220px] lg:max-h-none min-h-[140px]">
+                <!-- Filled dynamically by JavaScript -->
+            </div>
+
+            <!-- Sidebar bottom context helper -->
+            <div class="p-3 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 rounded-b-2xl flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-hand-pointer text-amber-500 text-xs"></i>
+                <span>คลิกชื่อหัวข้อเพื่อโหลดแบบฟอร์มด้านขวา</span>
+            </div>
+        </section>
+
+        <!-- RIGHT COLUMN: The Red/Rose Accent Panel -->
+        <section id="detailsBox" class="flex-1 flex flex-col bg-white rounded-2xl border-t-[6px] border-rose-500 shadow-premium shadow-rose-glow transition-all duration-300 overflow-hidden">
+            
+            <!-- Main Content Area Control Header -->
+            <div class="p-4 border-b border-slate-100 bg-gradient-to-b from-rose-50/30 to-transparent flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2.5">
+                    
+                    <!-- Sidebar Toggle Button (Customized for collapsing side bar) -->
+                    <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 flex items-center justify-center transition-all shadow-sm" title="ซ่อน/แสดง แถบรายการ">
+                        <i id="sidebarToggleIcon" class="fa-solid fa-indent text-sm"></i>
+                    </button>
+
+                    <div class="w-6.5 h-6.5 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center p-1.5">
+                        <i class="fa-solid fa-file-pen text-xs"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                            <span id="activeTemplateTitle">...</span>
+                            <!-- เพิ่มปุ่มลบมาไว้ตรงนี้เพื่อให้เห็นชัดเจนว่าสามารถลบได้ง่าย -->
+                            <button id="headerDeleteBtn" onclick="deleteCurrentTemplate()" class="ml-1 w-6 h-6 rounded-full hover:bg-rose-100 text-rose-400 hover:text-rose-600 flex items-center justify-center transition-all" title="ลบหัวข้อรายงานนี้ออกอย่างถาวร">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </h2>
+                        <p class="text-[10px] text-slate-400 font-medium">พิมพ์เว้นด้วยจุดสามจุด (...) เพื่อถอดรหัสและสร้างกล่องข้อความอัจฉริยะ</p>
+                    </div>
+                </div>
+                
+                <!-- Toggle Form fill mode vs Raw Template Edit mode -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
+                    <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-keyboard text-rose-500"></i>โหมดกรอกฟอร์ม
+                    </button>
+                    <button id="tabRawBtn" onclick="switchTab('raw')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-pencil-square text-slate-400"></i>แก้ไขเทมเพลต
+                    </button>
+                </div>
+            </div>
+
+            <!-- Double Pane Workspace: Inputs (Left) and Live Text Output (Right) -->
+            <div class="flex-1 flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-slate-100 overflow-hidden">
+                
+                <!-- PANE 1: Dynamic variables filling form -->
+                <div id="dynamicFormPane" class="w-full lg:w-1/2 p-4 overflow-y-auto space-y-3 flex flex-col min-w-0">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 shrink-0">
+                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-tasks text-rose-500"></i>ข้อมูลที่ต้องกรอกวันนี้
+                        </span>
+                        <button onclick="clearAllFields()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold transition-all flex items-center gap-1">
+                            <i class="fa-solid fa-eraser"></i> ล้างข้อมูลทั้งหมด
+                        </button>
+                    </div>
+
+                    <!-- Sub-Period selection tab layout for multi-period templates -->
+                    <div id="subPeriodSelectorContainer" class="hidden bg-amber-50/50 border border-amber-200/50 rounded-xl p-2.5 space-y-2 shadow-sm shrink-0 min-w-0">
+                        <span class="text-xs font-extrabold text-amber-800 tracking-wide flex items-center gap-1.5">
+                            <i class="fa-solid fa-clock-rotate-left"></i> เลือกช่วงเวลารายงานเพื่อสลับเทมเพลต
+                        </span>
+                        <div id="subPeriodTabList" class="flex flex-row gap-1 w-full min-w-0">
+                            <!-- Dynamic sub-period tab buttons go here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Container for generated fields formatted in stacked vertical order -->
+                    <div id="formFieldsContainer" class="flex-1 flex flex-col gap-2 overflow-y-auto pb-2 min-w-0">
+                        <!-- Dynamic Input elements created by JS will go here -->
+                        <div class="text-center py-12 text-slate-400">
+                            <i class="fa-solid fa-hand-pointer text-3xl mb-3 text-slate-300"></i>
+                            <p class="text-sm font-medium">โปรดเลือกหัวข้อรายงานจากกล่องซ้ายมือ<br>เพื่อเริ่มระบบถอดรหัสและกรอกข้อมูล</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANE 2: Raw template markup syntax code editor -->
+                <div id="rawEditPane" class="hidden w-full lg:w-1/2 p-4 flex flex-col gap-3 min-w-0">
+                    <div class="flex items-center justify-between border-b border-slate-50 pb-2">
+                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase">
+                            <i class="fa-solid fa-code text-rose-500 mr-1"></i>โครงร่างเทมเพลตข้อความ
+                        </span>
+                        <span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-100 font-bold px-2 py-0.5 rounded-md">
+                            พิมพ์ข้อความแล้วพิมพ์ <code class="font-mono bg-white px-1.5 py-0.5 rounded font-bold">...</code> ในจุดที่ต้องการกรอกข้อมูล
+                        </span>
+                    </div>
+
+                    <!-- Raw Edit Sub-period indicator if relevant -->
+                    <div id="rawSubPeriodWarning" class="hidden text-[11px] bg-rose-50 border border-rose-100 text-rose-700 p-2 rounded-lg">
+                        <i class="fa-solid fa-info-circle"></i> คุณกำลังแก้ไขเนื้อหาของช่วงเวลาที่เลือกอยู่ สลับช่วงเวลาในโหมดกรอกฟอร์มเพื่อแก้ไขช่วงอื่นๆ
+                    </div>
+                    
+                    <textarea id="rawTextarea" oninput="onRawTemplateChange()" class="flex-1 w-full min-h-[220px] lg:min-h-0 p-4 text-xs sm:text-sm font-mono border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all bg-slate-50/50 leading-relaxed" placeholder="พิมพ์ตัวเทมเพลตต้นแบบที่นี่..."></textarea>
+                    
+                    <div class="flex gap-2.5 mt-1">
+                        <button onclick="saveTemplateChanges()" class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-extrabold shadow-sm shadow-rose-200 transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-save"></i> บันทึกโครงร่างใหม่
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PANE 3: Ready to send output pane with one-click clipboard interaction -->
+                <div class="flex-1 p-4 bg-slate-50/60 flex flex-col overflow-hidden min-w-0">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3 shrink-0">
+                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-500"></i> ผลลัพธ์พร้อมส่ง (Final Output)
+                        </span>
+                        <span id="copyFeedback" class="text-xs font-bold text-emerald-700 opacity-0 transition-opacity duration-300 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                            <i class="fa-solid fa-clipboard-check"></i> คัดลอกแล้ว!
+                        </span>
+                    </div>
+
+                    <!-- Final Text Box Container with visual high-fidelity editor style -->
+                    <div class="flex-1 flex flex-col relative bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-inner min-h-0">
+                        
+                        <!-- Rich Preview Div to display red highlighted badges for empty variables -->
+                        <div id="outputDisplayHTML" class="flex-1 p-4 text-xs sm:text-sm font-sans text-slate-800 overflow-y-auto whitespace-pre-wrap bg-white leading-relaxed select-text pb-16"></div>
+                        
+                        <!-- Hidden textarea for standard clean copying operations -->
+                        <textarea id="outputDisplay" readonly class="hidden"></textarea>
+                        
+                        <!-- Actions Float Bar at bottom for seamless UX -->
+                        <div class="absolute bottom-3 right-3 left-3 flex justify-between items-center gap-2 bg-gradient-to-t from-white via-white to-transparent pt-4">
+                            <span class="text-[10px] text-slate-400 hidden sm:block"><i class="fa-solid fa-info-circle"></i> กดปุ่มขวาเพื่อคัดลอกทันที</span>
+                            <button onclick="copyToClipboard()" class="ml-auto flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all hover:-translate-y-0.5 cursor-pointer" title="คัดลอกรายงานเพื่อใช้ส่งต่อ">
+                                <i class="fa-solid fa-copy"></i> คัดลอกรายงานนำไปส่งต่อ
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODAL CONTAINER: Create new routine template modal -->
+    <div id="newTemplateModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-premium w-full max-w-xl border border-slate-100 transform transition-all flex flex-col overflow-hidden">
+            <!-- Modal Header -->
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                <h3 class="font-extrabold text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-plus text-emerald-500 text-lg"></i> เพิ่มหัวข้อรายงานฉบับใหม่ / นำเข้าไฟล์
+                </h3>
+                <button onclick="closeNewTemplateModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Form -->
+            <form onsubmit="handleCreateTemplate(event)" class="p-5 space-y-4">
+                <div>
+                    <label for="newTitleInput" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">ชื่อหัวข้อรายงาน / หมวดหมู่</label>
+                    <input type="text" id="newTitleInput" required placeholder="เช่น: รายงานส่งมอบงานกะดึก, SLA ประจำวัน" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm">
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1.5">
+                        <label for="newTemplateContent" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">เนื้อหารายงานต้นฉบับ</label>
+                        <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded">พิมพ์จุดสามจุด ... เพื่อเว้นจุดเติมคำ</span>
+                    </div>
+                    <textarea id="newTemplateContent" required rows="7" placeholder="เรียนพี่ๆ ครับ&#10;&#10;>> สรุปงานประจำวันที่ ...&#10;- ยอดขายรวมวันนี้ ... บาท&#10;- จำนวนลูกค้ารวม ... ท่าน" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-xs sm:text-sm font-mono leading-relaxed"></textarea>
+                </div>
+                
+                <div class="bg-amber-50/70 rounded-xl p-3.5 text-[11px] text-amber-800 leading-relaxed border border-amber-100">
+                    <i class="fa-solid fa-lightbulb text-amber-500 mr-1 text-sm"></i> <strong>เคล็ดลับง่ายๆ:</strong> ทุกจุดที่คุณต้องการให้ระบบสร้างฟิลด์ให้คุณพิมพ์ค่าแบบสดๆ ให้พิมพ์จุดสามจุด <code>...</code> เว้นว่างไว้ โดยระบบอัจฉริยะจะดึงคำที่อยู่ด้านหน้ามาตั้งเป็นชื่อหัวข้อฟิลด์กรอกให้คุณทันที!
+                </div>
+
+                <!-- Footer buttons -->
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
+                    <button type="button" onclick="closeNewTemplateModal()" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs sm:text-sm font-bold transition-all">ยกเลิก</button>
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-100 transition-all">บันทึกและเปิดใช้งาน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM CONFIRMATION DIALOG MODAL (Complies with NO-alert and NO-confirm rules) -->
+    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-[60] overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4">
+        <div class="bg-white rounded-2xl shadow-premium w-full max-w-md border border-slate-100 transform transition-all p-6 text-center">
+            <div class="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500 text-2xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">ยืนยันการลบหัวข้อรายงาน?</h3>
+            <p id="deleteConfirmMessage" class="text-xs text-slate-500 mb-6 leading-relaxed">คุณต้องการลบหัวข้อรายงานนี้จริงหรือไม่? ข้อมูลทั้งหมดในหัวข้อนี้จะถูกลบอย่างถาวรและไม่สามารถกู้คืนได้</p>
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeDeleteConfirmModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all">ยกเลิก</button>
+                <button id="confirmDeleteBtn" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-extrabold shadow-md shadow-rose-200 transition-all">ยืนยันลบถาวร</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST ELEMENT: Custom beautiful notifications without using alerts -->
+    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
+        <div id="toastIconContainer" class="p-1.5 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center">
+            <!-- Filled dynamically -->
+        </div>
+        <div>
+            <p id="toastMessage" class="font-bold text-slate-100"></p>
+        </div>
+    </div>
+
+    <!-- Footnote details -->
+    <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] sm:text-xs text-slate-400 font-medium shrink-0">
+        Daily Routine Workspace &bull; ออกแบบเพื่อการทำงานที่กระชับและปราศจากข้อผิดพลาด
+    </footer>
+
+    <script>
+        // Default presets converted to easy-typing "..." placeholders instead of brackets
+        const defaultTemplates = [
+            {
+                id: "sla-8-min",
+                title: "SLA 8 นาที",
+                activeSubPeriodIndex: 0,
+                subPeriods: [
+                    {
+                        name: "00:00 - 04:59 น.",
+                        content: `เรียนพี่ๆ ครับ
+
+รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 00:00 - 04:59 น.
+
+-> จำนวนอนุมัติทั้งหมด : ... รายการ
+-> อนุมัติน้อยกว่า 8 นาที : ... รายการ
+-> อนุมัติมากกว่า 8 นาที : ... รายการ
+-> ค่าเฉลี่ยทั้งวัน :  ... นาที
+---------------
+- TG กะ C เข้างาน ... คน
+
+ขอบคุณครับ`
+                    },
+                    {
+                        name: "05:00 - 13:59 น.",
+                        content: `เรียนพี่ๆ ครับ
+
+รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 05:00 - 13:59 น.
+
+-> จำนวนอนุมัติทั้งหมด : ... รายการ
+-> อนุมัติน้อยกว่า 8 นาที : ... รายการ
+-> อนุมัติมากกว่า 8 นาที : ... รายการ
+-> ค่าเฉลี่ยทั้งวัน :  ... นาที
+---------------
+- Temp ทีม A เข้างานจริง ... คน
+- Temp ทีม M เข้างานจริง ... คน
+
+ขอบคุณครับ`
+                    },
+                    {
+                        name: "14:00 - 22:59 น.",
+                        content: `เรียนพี่ๆ ครับ
+
+รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 14:00 - 22:59 น.
+
+-> จำนวนอนุมัติทั้งหมด : ... รายการ
+-> อนุมัติน้อยกว่า 8 นาที : ... รายการ
+-> อนุมัติมากกว่า 8 นาที : ... รายการ
+-> ค่าเฉลี่ยทั้งวัน :  ... นาที
+---------------
+- Temp ทีม M เข้างานจริง ... คน
+- Temp ทีม B เข้างานจริง ... คน
+
+ขอบคุณครับ`
+                    }
+                ]
+            },
+            {
+                id: "shift-handover",
+                title: "สรุปผลงานและส่งมอบกะประจำวัน",
+                content: `รายงานส่งมอบงานกะ ... ประจำวันที่ ...
+
+ผู้รับผิดชอบหลัก: ...
+
+สรุปสถานะการทำงานภาพรวม:
+- เคสที่เข้ามาทั้งหมด: ... รายการ
+- ดำเนินการเสร็จสิ้นแล้ว: ... รายการ
+- งานตกค้าง/ส่งต่อรอบถัดไป: ... รายการ
+
+ปัญหาหน้างานสำคัญที่พบ:
+- ...
+
+ขอบคุณครับ`
+            },
+            {
+                id: "system-health-check",
+                title: "Health Check ระบบเซิร์ฟเวอร์",
+                content: `บันทึกการตรวจเช็กสภาพระบบ Server & Hardware ประจำรอบเวลา ... น.
+ประจำวันที่ ...
+
+สถานะการทำงาน:
+- CPU Usage เฉลี่ย: ... %
+- Memory Used: ... %
+- Database Connectivity: ...
+- API Gateway latency: ... ms
+
+ผลการวิเคราะห์สภาพระบบ: ...
+บันทึกโดยเจ้าหน้าที่กะ: ...`
+            }
+        ];
+
+        // System storage & memory mapping variables
+        let templates = [];
+        let selectedTemplateId = "";
+        let currentTab = 'form'; // 'form' or 'raw'
+        let inputValuesMap = {}; // Keyed by placeholder sequential index for the active template layout
+
+        // Auto Migrator from Bracket style (v2) to Ellipsis style (v3)
+        function migrateLegacyTemplates() {
+            const oldData = localStorage.getItem('routine_templates_v2');
+            if (oldData && !localStorage.getItem('routine_templates_v3')) {
+                try {
+                    const parsed = JSON.parse(oldData);
+                    parsed.forEach(t => {
+                        // Replace double brackets with triple dots
+                        if (t.content) {
+                            t.content = t.content.replace(/\{\{[^}]+\}\}/g, '...');
+                        }
+                        if (t.subPeriods) {
+                            t.subPeriods.forEach(p => {
+                                if (p.content) {
+                                    p.content = p.content.replace(/\{\{[^}]+\}\}/g, '...');
+                                }
+                            });
+                        }
+                    });
+                    localStorage.setItem('routine_templates_v3', JSON.stringify(parsed));
+                } catch(e) {
+                    console.error("Migration error: ", e);
+                }
+            }
+        }
+
+        window.onload = function() {
+            // First migrate old browser storage if any
+            migrateLegacyTemplates();
+
+            // Load templates from modern storage
+            const stored = localStorage.getItem('routine_templates_v3');
+            if (stored) {
+                try {
+                    templates = JSON.parse(stored);
+                } catch(e) {
+                    templates = defaultTemplates;
+                }
+            } else {
+                templates = defaultTemplates;
+                localStorage.setItem('routine_templates_v3', JSON.stringify(defaultTemplates));
+            }
+
+            selectedTemplateId = localStorage.getItem('routine_selected_template_id_v3') || templates[0]?.id || "";
+
+            // Sync clocks
+            updateClock();
+            setInterval(updateClock, 1000);
+
+            // Apply stored sidebar state
+            applyStoredSidebarState();
+
+            // Initial view drawing
+            renderTopicsList();
+            loadTemplate(selectedTemplateId);
+        };
+
+        // Realtime Clock Display
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
+            const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: '2-digit', year: 'numeric' });
+            const clockText = `${dateStr} ${timeStr}`;
+            document.getElementById('currentTimeDisplay').innerText = clockText;
+        }
+
+        // Sidebar Hide / Show Mechanism
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebarBox');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const btn = document.getElementById('sidebarToggleBtn');
+            
+            const isCurrentlyHidden = sidebar.classList.contains('lg:w-0');
+            
+            if (isCurrentlyHidden) {
+                // Expand Sidebar
+                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
+                sidebar.classList.add('w-full', 'lg:w-[320px]');
+                icon.className = "fa-solid fa-indent text-sm text-slate-600";
+                btn.classList.remove('bg-amber-100', 'hover:bg-amber-200');
+                btn.classList.add('bg-slate-100', 'hover:bg-slate-200');
+                btn.title = "ซ่อนแถบรายการหัวข้อ";
+                localStorage.setItem('sidebar_hidden_state', 'false');
+                showToast('copy', 'แสดงแถบรายการแล้ว');
+            } else {
+                // Collapse Sidebar
+                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
+                sidebar.classList.remove('w-full', 'lg:w-[320px]');
+                icon.className = "fa-solid fa-outdent text-sm text-amber-700";
+                btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
+                btn.classList.add('bg-amber-100', 'hover:bg-amber-200');
+                btn.title = "แสดงแถบรายการหัวข้อ";
+                localStorage.setItem('sidebar_hidden_state', 'true');
+                showToast('delete', 'ซ่อนแถบรายการเรียบร้อย');
+            }
+        }
+
+        function applyStoredSidebarState() {
+            const sidebar = document.getElementById('sidebarBox');
+            const icon = document.getElementById('sidebarToggleIcon');
+            const btn = document.getElementById('sidebarToggleBtn');
+            const isHiddenState = localStorage.getItem('sidebar_hidden_state') === 'true';
+
+            if (isHiddenState) {
+                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
+                sidebar.classList.remove('w-full', 'lg:w-[320px]');
+                icon.className = "fa-solid fa-outdent text-sm text-amber-700";
+                btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
+                btn.classList.add('bg-amber-100', 'hover:bg-amber-200');
+                btn.title = "แสดงแถบรายการหัวข้อ";
+            } else {
+                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
+                sidebar.classList.add('w-full', 'lg:w-[320px]');
+                icon.className = "fa-solid fa-indent text-sm text-slate-600";
+                btn.classList.remove('bg-amber-100', 'hover:bg-amber-200');
+                btn.classList.add('bg-slate-100', 'hover:bg-slate-200');
+                btn.title = "ซ่อนแถบรายการหัวข้อ";
+            }
+        }
+
+        // Smart Parser to find and label ellipsis placeholders positional metadata
+        function getTemplateMatches(content) {
+            const matches = [];
+            if (!content) return matches;
+
+            // Regex matches either 3 or more dots like ... or the Unicode ellipsis character …
+            const regex = /(\.{3,}|…)/g;
+            let match;
+            let index = 0;
+            let lastMatchEndIndex = 0; // เพิ่มตัวแปรบันทึกตำแหน่งสิ้นสุดของจุด ... ล่าสุด
+            
+            while ((match = regex.exec(content)) !== null) {
+                const matchIndex = match.index;
+                const matchLength = match[0].length;
+                
+                // Track start of current line to find context
+                let startOfLine = content.lastIndexOf('\n', matchIndex);
+                if (startOfLine === -1) startOfLine = 0;
+                else startOfLine += 1;
+                
+                // ดึงข้อความเฉพาะระหว่างจุด ... ก่อนหน้า (หรือต้นบรรทัด) มาถึงจุด ... ปัจจุบัน ป้องกันบริบททับซ้อน
+                let startSearchIndex = Math.max(startOfLine, lastMatchEndIndex);
+                let immediatePrefixRaw = content.substring(startSearchIndex, matchIndex);
+                
+                // Standardize prefix cleanings (remove bullet-points, dashes, custom spacers)
+                let textBefore = immediatePrefixRaw.replace(/^[\s\-\*\>•\+\:\u200B\,]+/g, '').trim().replace(/[\s\:\-\=\>\,]+$/g, '');
+                
+                // Track end of current line
+                let endOfLine = content.indexOf('\n', matchIndex);
+                if (endOfLine === -1) endOfLine = content.length;
+                
+                // Get line text following the ellipsis
+                let textAfterOnLine = content.substring(matchIndex + matchLength, endOfLine);
+                // Extract the immediate word/label ending segment
+                let textAfter = textAfterOnLine.trim().split(/[\s\.\,]/)[0].trim();
+                
+                // Fallback smart naming
+                let label = "";
+                if (textBefore) {
+                    label = textBefore;
+                    if (textAfter && textAfter.length < 15) {
+                        label += ` (${textAfter})`;
+                    }
+                } else if (textAfter) {
+                    label = `ส่วนหน้า ${textAfter}`;
+                } else {
+                    label = `ช่องกรอกที่ ${index + 1}`;
+                }
+                
+                matches.push({
+                    id: index,
+                    startIndex: matchIndex,
+                    length: matchLength,
+                    label: label
+                });
+                
+                lastMatchEndIndex = matchIndex + matchLength; // อัปเดตตำแหน่งสิ้นสุดเพื่อใช้ในลูปถัดไป
+                index++;
+            }
+            return matches;
+        }
+
+        // Draw Sidebar selection list
+        function renderTopicsList() {
+            const listContainer = document.getElementById('topicsList');
+            listContainer.innerHTML = '';
+
+            document.getElementById('totalTemplatesCount').innerText = `${templates.length} หัวข้อ`;
+
+            templates.forEach(t => {
+                const isActive = t.id === selectedTemplateId;
+                
+                let contentString = t.content || '';
+                if (t.subPeriods) {
+                    const subIdx = t.activeSubPeriodIndex || 0;
+                    contentString = t.subPeriods[subIdx]?.content || '';
+                }
+
+                // Parse variables count
+                const matches = getTemplateMatches(contentString);
+                const varCount = matches.length;
+
+                let itemClass = `w-full flex items-center justify-between p-3 rounded-xl text-left text-xs sm:text-sm font-medium transition-all group duration-150 cursor-pointer border-l-4 `;
+                
+                if (isActive) {
+                    itemClass += 'bg-amber-50/80 text-amber-900 border-amber-500 shadow-sm font-semibold';
+                } else {
+                    itemClass += 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-slate-900';
+                }
+
+                const item = document.createElement('button');
+                item.className = itemClass;
+                item.onclick = () => loadTemplate(t.id);
+                
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5 overflow-hidden mr-1">
+                        <div class="p-1 rounded bg-white shadow-sm border border-slate-100 flex items-center justify-center">
+                            <i class="fa-solid fa-file-alt ${isActive ? 'text-amber-500' : 'text-slate-400 group-hover:text-amber-500'}"></i>
+                        </div>
+                        <span class="truncate block font-semibold text-xs sm:text-sm">${t.title}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">${varCount} ช่องกรอก</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    </div>
+                `;
+                listContainer.appendChild(item);
+            });
+        }
+
+        // Search filter logic
+        function filterTemplates() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const buttons = document.getElementById('topicsList').getElementsByTagName('button');
+            
+            templates.forEach((t, index) => {
+                const text = t.title.toLowerCase();
+                const btn = buttons[index];
+                if (btn) {
+                    if (text.includes(query)) {
+                        btn.classList.remove('hidden');
+                        btn.classList.add('flex');
+                    } else {
+                        btn.classList.remove('flex');
+                        btn.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // Loads selected template inside inputs & raw editors
+        function loadTemplate(id) {
+            const selected = templates.find(t => t.id === id);
+            if (!selected) return;
+
+            selectedTemplateId = id;
+            localStorage.setItem('routine_selected_template_id_v3', id);
+            
+            // Re-render sidebar active indicators
+            renderTopicsList();
+
+            document.getElementById('activeTemplateTitle').innerText = selected.title;
+
+            // Handle sub-periods if they exist
+            const subPeriodSelector = document.getElementById('subPeriodSelectorContainer');
+            const rawSubPeriodWarning = document.getElementById('rawSubPeriodWarning');
+            let contentToLoad = '';
+
+            if (selected.subPeriods && selected.subPeriods.length > 0) {
+                if (selected.activeSubPeriodIndex === undefined) {
+                    selected.activeSubPeriodIndex = 0;
+                }
+                const activeIndex = selected.activeSubPeriodIndex;
+                contentToLoad = selected.subPeriods[activeIndex].content;
+
+                subPeriodSelector.classList.remove('hidden');
+                rawSubPeriodWarning.classList.remove('hidden');
+                renderSubPeriodTabs(selected);
+            } else {
+                contentToLoad = selected.content;
+                subPeriodSelector.classList.add('hidden');
+                rawSubPeriodWarning.classList.add('hidden');
+            }
+
+            document.getElementById('rawTextarea').value = contentToLoad;
+
+            // Render inputs
+            parseTemplateVariables(contentToLoad);
+
+            // Hide/Show delete button in the main header
+            const headerDeleteBtn = document.getElementById('headerDeleteBtn');
+            if (templates.length <= 1) {
+                headerDeleteBtn.classList.add('hidden');
+            } else {
+                headerDeleteBtn.classList.remove('hidden');
+            }
+        }
+
+        // Render sub-period tabs dynamically
+        function renderSubPeriodTabs(template) {
+            const container = document.getElementById('subPeriodTabList');
+            container.innerHTML = '';
+
+            template.subPeriods.forEach((period, index) => {
+                const isActive = template.activeSubPeriodIndex === index;
+                const tabBtn = document.createElement('button');
+                tabBtn.type = 'button';
+                
+                tabBtn.className = `flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-bold transition-all ${
+                    isActive 
+                    ? 'bg-amber-500 text-white shadow-sm border border-amber-500' 
+                    : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200 hover:border-amber-300'
+                }`;
+
+                tabBtn.innerHTML = `
+                    <i class="${isActive ? 'fa-solid fa-circle-dot shrink-0' : 'fa-regular fa-circle shrink-0'}"></i>
+                    <span class="truncate">${period.name}</span>
+                `;
+
+                tabBtn.onclick = () => selectSubPeriod(index);
+                container.appendChild(tabBtn);
+            });
+        }
+
+        // Select specific sub-period and reload
+        function selectSubPeriod(index) {
+            const selected = templates.find(t => t.id === selectedTemplateId);
+            if (!selected || !selected.subPeriods) return;
+
+            selected.activeSubPeriodIndex = index;
+            // Persist
+            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+
+            // Reload template with new content
+            loadTemplate(selectedTemplateId);
+            showToast('save', `สลับเป็นช่วงเวลา ${selected.subPeriods[index].name}`);
+        }
+
+        // Quick auto filling chip actions
+        function fillTodayDate(idx) {
+            const today = new Date();
+            const d = String(today.getDate()).padStart(2, '0');
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const y = today.getFullYear() + 543; // Thai year
+            const val = `${d}/${m}/${y}`;
+            
+            setValue(idx, val);
+            showToast('save', 'บันทึกวันที่ไทยเรียบร้อย');
+        }
+
+        function fillGregorianDate(idx) {
+            const today = new Date();
+            const d = String(today.getDate()).padStart(2, '0');
+            const m = String(today.getMonth() + 1).padStart(2, '0');
+            const y = today.getFullYear(); // AD / Gregorian year
+            const val = `${d}/${m}/${y}`;
+            
+            setValue(idx, val);
+            showToast('save', 'บันทึกวันที่ ค.ศ. เรียบร้อย');
+        }
+
+        function fillCurrentTime(idx) {
+            const today = new Date();
+            const hrs = String(today.getHours()).padStart(2, '0');
+            const mins = String(today.getMinutes()).padStart(2, '0');
+            const val = `${hrs}:${mins}`;
+            
+            setValue(idx, val);
+            showToast('save', 'บันทึกเวลาปัจจุบันเรียบร้อย');
+        }
+
+        function setValue(idx, val) {
+            const targetInput = document.querySelector(`[data-index="${idx}"]`);
+            if (targetInput) {
+                targetInput.value = val;
+                updateValueMap(idx, val);
+            }
+        }
+
+        // Analyze and render input form fields based on ellipsis matches
+        function parseTemplateVariables(content) {
+            const container = document.getElementById('formFieldsContainer');
+            container.innerHTML = '';
+            
+            const matches = getTemplateMatches(content);
+
+            if (matches.length === 0) {
+                container.innerHTML = `
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-800 text-xs flex flex-col gap-1 shadow-inner">
+                        <p class="font-extrabold flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> ไม่จำเป็นต้องระบุช่องกรอกเพิ่มเติม!</p>
+                        <p class="text-[11px] text-emerald-600 leading-relaxed">เทมเพลตนี้พร้อมคัดลอกได้ทันที คุณสามารถพิมพ์แก้ไขดัดแปลงเพิ่มเติมผ่านแท็บแก้ไขเทมเพลตได้</p>
+                    </div>
+                `;
+                updateFinalOutput(content, escapeHTMLForDisplay(content));
+                return;
+            }
+
+            // Create stacked inputs for matches
+            matches.forEach((m, idx) => {
+                const formGroup = document.createElement('div');
+                
+                // Values mapped positionally
+                const currentValue = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
+                
+                const emptyClass = 'p-2 rounded-lg border transition-all space-y-1 border-rose-300 bg-rose-50/40 shadow-sm min-w-0';
+                const filledClass = 'p-2 rounded-lg border transition-all space-y-1 border-slate-200/60 bg-white shadow-sm min-w-0';
+
+                formGroup.className = currentValue === '' ? emptyClass : filledClass;
+                formGroup.id = `fieldCard-${idx}`;
+
+                let inputPlaceholder = `กรอกข้อมูลส่วนนี้`;
+                
+                if (inputValuesMap[idx] === undefined) {
+                    inputValuesMap[idx] = '';
+                }
+
+                // Context analysis for customized helper badges
+                const isDateVar = m.label.toLowerCase().includes('วัน') || m.label.toLowerCase().includes('date');
+                const isTimeVar = m.label.toLowerCase().includes('เวลา') || m.label.toLowerCase().includes('time');
+                // Personalized memory rule implementation: If m.label contains "คลาสรถ" or "m-flow"
+                const isMflowClass = m.label.toLowerCase().includes('คลาสรถ') || m.label.toLowerCase().includes('m-flow') || m.label.toLowerCase().includes('m flow');
+
+                let helpersMarkup = '';
+                if (isDateVar) {
+                    helpersMarkup = `
+                        <div class="flex gap-1 shrink-0">
+                            <button type="button" onclick="fillTodayDate(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all">วันไทย</button>
+                            <button type="button" onclick="fillGregorianDate(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all">ค.ศ.</button>
+                        </div>
+                    `;
+                } else if (isTimeVar) {
+                    helpersMarkup = `
+                        <div class="flex gap-1 shrink-0">
+                            <button type="button" onclick="fillCurrentTime(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all flex items-center gap-1"><i class="fa-regular fa-clock"></i>ตอนนี้</button>
+                        </div>
+                    `;
+                } else if (isMflowClass) {
+                    helpersMarkup = `
+                        <div class="flex gap-1 shrink-0">
+                            <button type="button" onclick="setValue(${idx}, '4 ล้อ (C1)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">4 ล้อ (C1)</button>
+                            <button type="button" onclick="setValue(${idx}, '6 ล้อ (C2)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">6 ล้อ (C2)</button>
+                            <button type="button" onclick="setValue(${idx}, 'มากกว่า 6 ล้อ (C3)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">> 6 ล้อ (C3)</button>
+                        </div>
+                    `;
+                }
+
+                formGroup.innerHTML = `
+                    <div class="flex justify-between items-center gap-2">
+                        <label class="text-[10px] font-extrabold text-slate-600 tracking-wide flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
+                            <span>${m.label}</span>
+                        </label>
+                        ${helpersMarkup}
+                    </div>
+                    <input type="text" 
+                           data-index="${idx}"
+                           value="${inputValuesMap[idx]}"
+                           oninput="updateValueMap(${idx}, this.value)"
+                           placeholder="${inputPlaceholder}"
+                           class="w-full px-2 py-1 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all shadow-sm text-xs">
+                `;
+                container.appendChild(formGroup);
+            });
+
+            computeOutput();
+        }
+
+        function updateValueMap(idx, value) {
+            inputValuesMap[idx] = value;
+            
+            const card = document.getElementById(`fieldCard-${idx}`);
+            if (card) {
+                if (value.trim() === '') {
+                    card.className = 'p-2 rounded-lg border transition-all space-y-1 border-rose-300 bg-rose-50/40 shadow-sm min-w-0';
+                } else {
+                    card.className = 'p-2 rounded-lg border transition-all space-y-1 border-slate-200/60 bg-white shadow-sm min-w-0';
+                }
+            }
+            computeOutput();
+        }
+
+        function escapeHTMLForDisplay(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // Rebuilds live output using precise sequential match substitutions
+        function computeOutput() {
+            const selected = templates.find(t => t.id === selectedTemplateId);
+            if (!selected) return;
+
+            let originalContent = '';
+            if (selected.subPeriods && selected.subPeriods.length > 0) {
+                const subIdx = selected.activeSubPeriodIndex || 0;
+                originalContent = selected.subPeriods[subIdx].content;
+            } else {
+                originalContent = selected.content;
+            }
+
+            const matches = getTemplateMatches(originalContent);
+
+            // A: Generate Plain-Text output version for standard copy operations
+            let finalOutputText = "";
+            let lastIndex = 0;
+            
+            matches.forEach((m, idx) => {
+                finalOutputText += originalContent.substring(lastIndex, m.startIndex);
+                const userVal = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
+                const replacementText = userVal !== '' ? userVal : `[ยังไม่ได้ระบุ: ${m.label}]`;
+                finalOutputText += replacementText;
+                lastIndex = m.startIndex + m.length;
+            });
+            finalOutputText += originalContent.substring(lastIndex);
+
+            // B: Generate Beautiful HTML visual version with highlighted warning badges
+            let finalOutputHTML = "";
+            let lastIndexHTML = 0;
+            
+            matches.forEach((m, idx) => {
+                finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML, m.startIndex));
+                const userVal = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
+                
+                let htmlReplacement = '';
+                if (userVal !== '') {
+                    htmlReplacement = `<span class="text-slate-900 font-semibold bg-emerald-50 px-1 rounded border border-emerald-100">${escapeHTMLForDisplay(userVal)}</span>`;
+                } else {
+                    htmlReplacement = `<span class="bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.5 rounded border border-rose-300 inline-flex items-center gap-1 animate-pulse text-[11px]"><i class="fa-solid fa-triangle-exclamation text-rose-500 animate-bounce"></i>ยังไม่ได้ระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
+                }
+                
+                finalOutputHTML += htmlReplacement;
+                lastIndexHTML = m.startIndex + m.length;
+            });
+            finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML));
+
+            updateFinalOutput(finalOutputText, finalOutputHTML);
+        }
+
+        // Draw output states
+        function updateFinalOutput(plainText, htmlText) {
+            document.getElementById('outputDisplay').value = plainText;
+            document.getElementById('outputDisplayHTML').innerHTML = htmlText;
+        }
+
+        function clearAllFields() {
+            inputValuesMap = {};
+            const selected = templates.find(t => t.id === selectedTemplateId);
+            if (selected) {
+                let currentContent = selected.content || '';
+                if (selected.subPeriods) {
+                    const subIdx = selected.activeSubPeriodIndex || 0;
+                    currentContent = selected.subPeriods[subIdx].content;
+                }
+                parseTemplateVariables(currentContent);
+            }
+            showToast('delete', 'รีเซ็ตข้อมูลล้างฟอร์มเรียบร้อยแล้ว');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const formBtn = document.getElementById('tabFormBtn');
+            const rawBtn = document.getElementById('tabRawBtn');
+            const formPane = document.getElementById('dynamicFormPane');
+            const rawPane = document.getElementById('rawEditPane');
+
+            if (tab === 'form') {
+                formBtn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5';
+                rawBtn.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5';
+                
+                formPane.classList.remove('hidden');
+                rawPane.classList.add('hidden');
+                
+                const selected = templates.find(t => t.id === selectedTemplateId);
+                if (selected) {
+                    let currentContent = selected.content || '';
+                    if (selected.subPeriods) {
+                        const subIdx = selected.activeSubPeriodIndex || 0;
+                        currentContent = selected.subPeriods[subIdx].content;
+                    }
+                    parseTemplateVariables(currentContent);
+                }
+            } else {
+                rawBtn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5';
+                formBtn.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5';
+                
+                rawPane.classList.remove('hidden');
+                formPane.classList.add('hidden');
+            }
+        }
+
+        // Live text editor change logic
+        function onRawTemplateChange() {
+            const currentRawText = document.getElementById('rawTextarea').value;
+            const matches = getTemplateMatches(currentRawText);
+
+            // Plain-Text output rebuild
+            let finalOutputText = "";
+            let lastIndex = 0;
+            matches.forEach((m, idx) => {
+                finalOutputText += currentRawText.substring(lastIndex, m.startIndex);
+                const userVal = inputValuesMap[idx] || '';
+                const replacementText = userVal !== '' ? userVal : `[ยังไม่ได้ระบุ: ${m.label}]`;
+                finalOutputText += replacementText;
+                lastIndex = m.startIndex + m.length;
+            });
+            finalOutputText += currentRawText.substring(lastIndex);
+            
+            // HTML visual display output rebuild
+            let finalOutputHTML = "";
+            let lastIndexHTML = 0;
+            matches.forEach((m, idx) => {
+                finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML, m.startIndex));
+                const userVal = inputValuesMap[idx] || '';
+                
+                let htmlReplacement = '';
+                if (userVal !== '') {
+                    htmlReplacement = `<span class="text-slate-900 font-semibold bg-emerald-50 px-1 rounded border border-emerald-100">${escapeHTMLForDisplay(userVal)}</span>`;
+                } else {
+                    htmlReplacement = `<span class="bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.5 rounded border border-rose-300 inline-flex items-center gap-1 animate-pulse text-[11px]"><i class="fa-solid fa-triangle-exclamation text-rose-500"></i>ยังไม่ได้ระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
+                }
+                
+                finalOutputHTML += htmlReplacement;
+                lastIndexHTML = m.startIndex + m.length;
+            });
+            finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML));
+
+            updateFinalOutput(finalOutputText, finalOutputHTML);
+        }
+
+        function saveTemplateChanges() {
+            const currentRawText = document.getElementById('rawTextarea').value.trim();
+            if (!currentRawText) {
+                showToast('error', 'ข้อความเทมเพลตต้องห้ามว่างเปล่า');
+                return;
+            }
+
+            const index = templates.findIndex(t => t.id === selectedTemplateId);
+            if (index !== -1) {
+                const template = templates[index];
+                
+                if (template.subPeriods && template.subPeriods.length > 0) {
+                    const subIdx = template.activeSubPeriodIndex || 0;
+                    template.subPeriods[subIdx].content = currentRawText;
+                } else {
+                    template.content = currentRawText;
+                }
+
+                localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+                showToast('save', 'อัปเดตโครงร่างต้นฉบับสำเร็จ!');
+                
+                // Keep values where indexes match, or clear map cleanly
+                parseTemplateVariables(currentRawText);
+                switchTab('form');
+            }
+        }
+
+        function openNewTemplateModal() {
+            document.getElementById('newTemplateModal').classList.remove('hidden');
+            document.getElementById('newTitleInput').focus();
+        }
+
+        function closeNewTemplateModal() {
+            document.getElementById('newTemplateModal').classList.add('hidden');
+            document.getElementById('newTitleInput').value = '';
+            document.getElementById('newTemplateContent').value = '';
+        }
+
+        function handleCreateTemplate(event) {
+            event.preventDefault();
+            const title = document.getElementById('newTitleInput').value.trim();
+            const content = document.getElementById('newTemplateContent').value.trim();
+
+            if (!title || !content) return;
+
+            const id = 'custom-' + Date.now();
+            const newTemplate = { id, title, content };
+
+            templates.push(newTemplate);
+            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+
+            closeNewTemplateModal();
+            selectedTemplateId = id;
+            localStorage.setItem('routine_selected_template_id_v3', id);
+            
+            inputValuesMap = {}; // รีเซ็ตค่าหลังจากสร้างใหม่เพื่อให้เริ่มสดใส
+            renderTopicsList();
+            loadTemplate(id);
+            switchTab('form');
+            showToast('save', `เพิ่มหัวข้อรายงาน "${title}" เรียบร้อยแล้ว`);
+        }
+
+        // Custom Confirmation dialog controller
+        function deleteCurrentTemplate() {
+            if (templates.length <= 1) {
+                showToast('error', 'ไม่สามารถลบหัวข้อรายงานสุดท้ายได้');
+                return;
+            }
+
+            const current = templates.find(t => t.id === selectedTemplateId);
+            const title = current ? current.title : 'หัวข้อ';
+            
+            document.getElementById('deleteConfirmMessage').innerHTML = `คุณต้องการลบหัวข้อรายงาน <strong class="text-rose-600">"${title}"</strong> จริงหรือไม่? ข้อมูลทั้งหมดในหัวข้อนี้จะถูกลบอย่างถาวรและไม่สามารถกู้คืนได้`;
+            document.getElementById('deleteConfirmModal').classList.remove('hidden');
+            
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                templates = templates.filter(t => t.id !== selectedTemplateId);
+                localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+
+                selectedTemplateId = templates[0].id;
+                localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
+
+                // Reset values state map
+                inputValuesMap = {};
+
+                renderTopicsList();
+                loadTemplate(selectedTemplateId);
+                switchTab('form');
+                closeDeleteConfirmModal();
+                showToast('delete', `ลบหัวข้อ "${title}" เรียบร้อยแล้ว`);
+            };
+        }
+
+        function closeDeleteConfirmModal() {
+            document.getElementById('deleteConfirmModal').classList.add('hidden');
+        }
+
+        function copyToClipboard() {
+            const outputArea = document.getElementById('outputDisplay');
+            const textToCopy = outputArea.value;
+
+            // Clean clipboard handler
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    triggerCopyAnimation();
+                })
+                .catch(err => {
+                    fallbackCopyHelper(textToCopy);
+                });
+        }
+
+        function fallbackCopyHelper(text) {
+            const temp = document.createElement("textarea");
+            temp.value = text;
+            temp.style.position = "fixed";
+            temp.style.left = "-9999px";
+            temp.style.top = "0";
+            document.body.appendChild(temp);
+            temp.focus();
+            temp.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    triggerCopyAnimation();
+                }
+            } catch (err) {
+                console.error('Copy operations failed: ', err);
+            }
+            document.body.removeChild(temp);
+        }
+
+        function triggerCopyAnimation() {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.classList.remove('opacity-0');
+            feedback.classList.add('opacity-100');
+
+            showToast('copy', 'คัดลอกรายงานลงคลิปบอร์ดแล้ว!');
+
+            setTimeout(() => {
+                feedback.classList.remove('opacity-100');
+                feedback.classList.add('opacity-0');
+            }, 2500);
+        }
+
+        // Export templates as backup JSON
+        function exportAllTemplates() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(templates, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "daily_report_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('save', 'ส่งออกไฟล์สำรอง JSON เรียบร้อย');
+        }
+
+        // Import backup (รองรับทั้ง JSON และ TXT)
+        function triggerImport() {
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const fileName = file.name;
+            const isTextFile = fileName.toLowerCase().endsWith('.txt');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (isTextFile) {
+                    // ลอจิกการนำเข้าไฟล์ .txt ให้ดึงข้อความขึ้นไปไว้ใน Modal พรีวิวเพื่อให้ผู้ใช้ตรวจสอบก่อนบันทึก
+                    const content = e.target.result;
+                    // ลบนามสกุล .txt ออกเพื่อนำมาเป็นชื่อหัวข้อตั้งต้น
+                    const title = fileName.replace(/\.[^/.]+$/, ""); 
+                    
+                    document.getElementById('newTitleInput').value = title;
+                    document.getElementById('newTemplateContent').value = content;
+                    document.getElementById('newTemplateModal').classList.remove('hidden');
+                    
+                    showToast('copy', 'โหลดข้อมูลจากไฟล์ Text สำเร็จ! โปรดตรวจสอบก่อนบันทึก');
+                } else {
+                    // ลอจิกสำหรับนำเข้าไฟล์ .json (อัปเดตแทนที่ระบบเดิมทั้งหมด)
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (Array.isArray(imported) && imported.length > 0 && imported[0].title) {
+                            templates = imported;
+                            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+                            selectedTemplateId = templates[0].id;
+                            localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
+                            
+                            inputValuesMap = {};
+                            renderTopicsList();
+                            loadTemplate(selectedTemplateId);
+                            showToast('save', 'นำเข้าเทมเพลต JSON เรียบร้อยทั้งหมดแล้ว!');
+                        } else {
+                            showToast('error', 'โครงสร้างไฟล์สำรอง JSON ไม่ถูกต้อง');
+                        }
+                    } catch (err) {
+                        showToast('error', 'เกิดข้อผิดพลาดในการนำเข้าไฟล์ JSON');
+                    }
+                }
+            };
+            reader.readAsText(file);
+            
+            // รีเซ็ต input value เพื่อให้สามารถเลือกไฟล์เดิมซ้ำได้ในกรณีที่กดยกเลิก
+            event.target.value = '';
+        }
+
+        // Toast notifications logic helper
+        function showToast(type, message) {
+            const toast = document.getElementById('toastNotification');
+            const iconContainer = document.getElementById('toastIconContainer');
+            const msgEl = document.getElementById('toastMessage');
+
+            msgEl.innerText = message;
+            
+            let iconMarkup = '<i class="fa-solid fa-circle-info text-emerald-400"></i>';
+            if (type === 'copy') iconMarkup = '<i class="fa-solid fa-copy text-teal-400"></i>';
+            else if (type === 'save') iconMarkup = '<i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>';
+            else if (type === 'delete') iconMarkup = '<i class="fa-solid fa-trash-alt text-amber-400"></i>';
+            else if (type === 'error') iconMarkup = '<i class="fa-solid fa-circle-exclamation text-rose-500"></i>';
+
+            iconContainer.innerHTML = iconMarkup;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
