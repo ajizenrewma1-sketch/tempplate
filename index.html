@@ -876,9 +876,9 @@
                 }
 
                 // Context analysis for customized helper badges
-                const isDateVar = m.label.toLowerCase().includes('วัน') || m.label.toLowerCase().includes('date');
+                // แก้ไขโดยปรับจากคำว่า 'วัน' เป็น 'วันที่' เพื่อให้รัดกุมมากขึ้น
+                const isDateVar = m.label.toLowerCase().includes('วันที่') || m.label.toLowerCase().includes('date');
                 const isTimeVar = m.label.toLowerCase().includes('เวลา') || m.label.toLowerCase().includes('time');
-                // Personalized memory rule implementation: If m.label contains "คลาสรถ" or "m-flow"
                 const isMflowClass = m.label.toLowerCase().includes('คลาสรถ') || m.label.toLowerCase().includes('m-flow') || m.label.toLowerCase().includes('m flow');
 
                 let helpersMarkup = '';
