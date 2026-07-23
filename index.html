@@ -680,17 +680,20 @@
         }
 
         async function saveToCloud() {
-            try {
-                const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
-                await getCloudDocRef().set(data);
-                localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
-                localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
-                showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
-                updateCloudBadge(true, `ซิงค์กับ Cloud (${currentProfileName})`);
-            } catch (err) {
-                showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้');
-            }
-        }
+    try {
+        const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
+        await getCloudDocRef().set(data);
+        localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
+        localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
+        showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
+        updateCloudBadge(true, `ซิงค์กับ Cloud (${currentProfileName})`);
+        return true; // <-- เพิ่ม: บ่งบอกว่าออนไลน์และซิงค์สำเร็จ
+    } catch (err) {
+        showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้ (ระบบทำงานแบบออฟไลน์)');
+        updateCloudBadge(false, "ออฟไลน์ (ใช้ Local)"); 
+        return false; // <-- เพิ่ม: บ่งบอกว่าออฟไลน์ ซิงค์ไม่สำเร็จ
+    }
+}
 
         async function saveToCloudSilent() {
             try {
@@ -828,10 +831,14 @@
             const matches = getTemplateMatches(content);
 
             if (matches.length === 0) {
-                container.innerHTML = `<div class="p-4 bg-white/60 rounded-2xl border text-center"><p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน (ไม่มีช่องกรอก)</p></div>`;
-                updateFinalOutput(content, escapeHTML(content));
-                return;
-            }
+    container.innerHTML = `<div class="p-4 bg-white/60 rounded-2xl border text-center"><p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน (ไม่มีช่องกรอก)</p></div>`;
+    
+    // อัปเดตข้อมูลไปยังส่วน "ผลลัพธ์พร้อมส่ง" โดยตรง
+    document.getElementById('outputDisplay').value = content;
+    document.getElementById('outputDisplayHTML').innerHTML = escapeHTML(content);
+    
+    return;
+}
 
             matches.forEach((m, idx) => {
                 const mapKey = getCurrentKey(idx);
@@ -935,11 +942,21 @@
         }
 
         async function backupToCloud() {
-            await saveToCloud();
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ profile: currentProfileName, templates, inputValuesMap }, null, 2));
-            const a = document.createElement('a'); a.href = dataStr; a.download = `mflow_${currentProfileId}_backup_${Date.now()}.json`;
-            document.body.appendChild(a); a.click(); a.remove();
-        }
+    // ให้บันทึกขึ้น Cloud และรอรับค่าสถานะกลับมา
+    const isCloudSuccess = await saveToCloud();
+    
+    // ยกเว้นกรณีที่มีสถานะไม่ได้เชื่อมต่อกับ Cloud (isCloudSuccess เป็น false) จึงค่อยดาวน์โหลดไฟล์
+    if (!isCloudSuccess) {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ profile: currentProfileName, templates, inputValuesMap }, null, 2));
+        const a = document.createElement('a'); 
+        a.href = dataStr; 
+        a.download = `mflow_${currentProfileId}_backup_${Date.now()}.json`;
+        document.body.appendChild(a); 
+        a.click(); 
+        a.remove();
+        showToast('save', 'ดาวน์โหลดข้อมูลสำรองลงเครื่องแล้ว');
+    }
+}
 
         async function triggerImport() {
             try {
