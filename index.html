@@ -115,7 +115,6 @@
             </div>
             
             <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
-                <!-- ปุ่มแสดงโปรไฟล์ปัจจุบัน & ปุ่มลงชื่อออก -->
                 <div class="flex items-center gap-1 bg-blue-50/80 p-1 rounded-full border border-blue-200 shadow-sm">
                     <button onclick="showProfileSelector()" class="px-3 h-8 flex items-center justify-center gap-2 text-xs font-bold text-apple-blue hover:bg-blue-100/80 rounded-full transition-all" title="เปลี่ยนโปรไฟล์">
                         <div id="headerProfileAvatar" class="w-5 h-5 rounded-full bg-apple-blue text-white flex items-center justify-center text-[10px] overflow-hidden shrink-0">
@@ -294,7 +293,6 @@
                 เพิ่มโปรไฟล์ผู้ใช้งานใหม่
             </h3>
             <form onsubmit="handleCreateProfile(event)" class="space-y-4">
-                <!-- อัปโหลดรูปโปรไฟล์ -->
                 <div class="flex flex-col items-center justify-center gap-2">
                     <div class="relative w-20 h-20 rounded-full border-2 border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center group cursor-pointer" onclick="document.getElementById('newProfileAvatarInput').click()">
                         <img id="avatarPreview" class="w-full h-full object-cover hidden" alt="Avatar">
@@ -320,6 +318,22 @@
                     <button type="submit" class="px-6 py-2.5 bg-apple-blue text-white rounded-full text-sm font-bold shadow-md">สร้างโปรไฟล์</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal ยืนยันการลบโปรไฟล์ -->
+    <div id="deleteProfileModal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white p-6 flex flex-col items-center text-center">
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-500 flex items-center justify-center mb-4 shadow-sm">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+            </div>
+            <h3 class="font-bold text-apple-darkText text-lg mb-2">ยืนยันการลบโปรไฟล์</h3>
+            <p class="text-sm text-slate-500 mb-6">คุณต้องการลบโปรไฟล์ <span id="deleteProfileNameTarget" class="font-bold text-apple-darkText"></span> ใช่หรือไม่?<br>ข้อมูลเทมเพลตจะถูกลบถาวรและไม่สามารถกู้คืนได้</p>
+            
+            <div class="flex w-full gap-3">
+                <button type="button" onclick="closeDeleteProfileConfirm()" class="flex-1 py-3 bg-black/5 hover:bg-black/10 text-slate-600 rounded-2xl text-sm font-semibold transition-all">ยกเลิก</button>
+                <button type="button" onclick="proceedDeleteProfile()" class="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-sm font-bold shadow-md shadow-red-500/30 transition-all">ลบโปรไฟล์</button>
+            </div>
         </div>
     </div>
 
@@ -373,6 +387,7 @@
         let selectedTemplateId = "";
         let currentTab = 'form';
         let tempAvatarDataUrl = "";
+        let profileToDeleteId = null; // ตัวแปรเก็บ ID โปรไฟล์ที่กำลังจะลบ
 
         window.onload = async function() {
             updateClock();
@@ -438,27 +453,98 @@
             profiles.forEach(p => {
                 const isSelected = p.id === currentProfileId;
 
-                const btn = document.createElement('button');
-                btn.className = `w-full p-3.5 rounded-2xl flex items-center justify-between transition-all border ${
-                    isSelected ? 'bg-blue-50 border-blue-300 text-apple-blue font-bold shadow-sm' : 'bg-white/80 border-white/80 text-slate-700 hover:bg-white'
+                const rowDiv = document.createElement('div');
+                rowDiv.className = `w-full flex items-center justify-between gap-2 p-2 rounded-2xl transition-all border ${
+                    isSelected ? 'bg-blue-50 border-blue-300 shadow-sm' : 'bg-white/80 border-white/80 hover:bg-white'
                 }`;
-                btn.onclick = () => selectProfile(p.id, p.name, p.avatar);
+
+                // ปุ่มเลือกโปรไฟล์
+                const selectBtn = document.createElement('button');
+                selectBtn.className = "flex-1 flex items-center gap-3 overflow-hidden text-left p-1.5";
+                selectBtn.onclick = () => selectProfile(p.id, p.name, p.avatar);
 
                 const avatarHtml = p.avatar 
                     ? `<img src="${p.avatar}" class="w-9 h-9 rounded-xl object-cover shrink-0 shadow-sm">`
                     : `<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0"><i class="fa-solid fa-user text-sm"></i></div>`;
 
-                btn.innerHTML = `
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        ${avatarHtml}
-                        <span class="text-sm truncate">${p.name}</span>
+                selectBtn.innerHTML = `
+                    ${avatarHtml}
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold ${isSelected ? 'text-apple-blue' : 'text-slate-700'}">${p.name}</span>
+                        ${isSelected ? '<span class="text-[10px] text-blue-500 font-semibold">ใช้งานอยู่</span>' : '<span class="text-[10px] text-slate-400">คลิกเพื่อเข้าใช้งาน</span>'}
                     </div>
-                    <span class="text-xs font-semibold px-3 py-1 rounded-full shrink-0 ${isSelected ? 'bg-apple-blue text-white' : 'bg-slate-100 text-slate-500'}">
-                        ${isSelected ? 'ใช้งานอยู่' : 'เข้าใช้งาน'}
-                    </span>
                 `;
-                container.appendChild(btn);
+
+                // ปุ่มลบโปรไฟล์
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all shrink-0";
+                deleteBtn.title = "ลบโปรไฟล์";
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation(); // ป้องกันการเผลอกดเข้าโปรไฟล์
+                    openDeleteProfileConfirm(p.id, p.name);
+                };
+                deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can text-sm"></i>';
+
+                rowDiv.appendChild(selectBtn);
+                rowDiv.appendChild(deleteBtn);
+                container.appendChild(rowDiv);
             });
+        }
+
+        // ==========================================
+        // PROFILE DELETION LOGIC
+        // ==========================================
+        function openDeleteProfileConfirm(id, name) {
+            profileToDeleteId = id;
+            document.getElementById('deleteProfileNameTarget').innerText = `"${name}"`;
+            document.getElementById('deleteProfileModal').classList.remove('hidden');
+        }
+
+        function closeDeleteProfileConfirm() {
+            profileToDeleteId = null;
+            document.getElementById('deleteProfileModal').classList.add('hidden');
+        }
+
+        async function proceedDeleteProfile() {
+            if (!profileToDeleteId) return;
+            try {
+                const metaRef = db.collection("mflow_reports").doc("system_profiles_meta");
+                const doc = await metaRef.get();
+                
+                if (doc.exists) {
+                    let profiles = doc.data().profiles || [];
+                    
+                    // ป้องกันการลบโปรไฟล์สุดท้ายในระบบ
+                    if (profiles.length <= 1) {
+                        showToast('error', 'ไม่สามารถลบโปรไฟล์สุดท้ายได้');
+                        closeDeleteProfileConfirm();
+                        return;
+                    }
+                    
+                    profiles = profiles.filter(p => p.id !== profileToDeleteId);
+                    await metaRef.set({ profiles });
+                }
+                
+                // ลบข้อมูลเทมเพลตของโปรไฟล์นี้
+                await db.collection("mflow_reports").doc(`profile_${profileToDeleteId}`).delete();
+                
+                // ล้างข้อมูลจาก LocalStorage
+                localStorage.removeItem(`routine_templates_${profileToDeleteId}`);
+                localStorage.removeItem(`routine_inputs_${profileToDeleteId}`);
+                localStorage.removeItem(`routine_selected_id_${profileToDeleteId}`);
+
+                showToast('delete', 'ลบโปรไฟล์สำเร็จ');
+                closeDeleteProfileConfirm();
+
+                // ถ้าระบบกำลังใช้โปรไฟล์ที่ถูกลบอยู่ ให้ทำการ Logout ออกไปหน้าเลือกใหม่
+                if (currentProfileId === profileToDeleteId) {
+                    logoutProfile();
+                } else {
+                    showProfileSelector(); // รีเฟรชรายชื่อโปรไฟล์ใหม่
+                }
+            } catch (err) {
+                showToast('error', 'เกิดข้อผิดพลาดในการลบโปรไฟล์');
+            }
         }
 
         async function selectProfile(id, name, avatar = '') {
@@ -762,6 +848,7 @@
                 } else if (lbl.includes('เวลา') || lbl.includes('time')) {
                     helpers = `<button type="button" onclick="setVal(${idx}, 'time')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">ตอนนี้</button>`;
                 } else if (lbl.includes('คลาสรถ') || lbl.includes('m-flow')) {
+                    // M-Flow Vehicle Class Dropdown requirement
                     helpers = `<button type="button" onclick="setVal(${idx}, 'C1')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C1</button> <button type="button" onclick="setVal(${idx}, 'C2')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C2</button> <button type="button" onclick="setVal(${idx}, 'C3')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C3</button>`;
                 }
 
