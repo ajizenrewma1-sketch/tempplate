@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Routine Report Workspace - Cloud Edition</title>
+    <title>Daily Routine Report Workspace - Multi-Profile Cloud Edition</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,6 +73,30 @@
         <div class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/40 rounded-full filter blur-[90px] animate-pulse"></div>
     </div>
 
+    <!-- PROFILE SELECTION SCREEN (Modal / Overlay เริ่มต้น) -->
+    <div id="profileSelectionOverlay" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md rounded-[32px] p-8 shadow-2xl flex flex-col items-center text-center space-y-6">
+            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 to-apple-blue text-white flex items-center justify-center shadow-lg text-2xl">
+                <i class="fa-solid fa-users-viewfinder"></i>
+            </div>
+            <div>
+                <h2 class="text-xl font-bold text-apple-darkText">เลือกโปรไฟล์เข้าใช้งาน</h2>
+                <p class="text-xs text-slate-500 mt-1">แต่ละโปรไฟล์จะแยก Template และข้อมูลการตั้งค่าอิสระจากกันบน Cloud</p>
+            </div>
+
+            <!-- รายชื่อโปรไฟล์ -->
+            <div id="profileListContainer" class="w-full space-y-2.5 max-h-[260px] overflow-y-auto pr-1">
+                <!-- Rendered dynamically -->
+            </div>
+
+            <div class="w-full pt-2 border-t border-black/5 flex flex-col gap-2">
+                <button onclick="openCreateProfileModal()" class="w-full py-3 bg-slate-800 hover:bg-black text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i> เพิ่มโปรไฟล์ใหม่
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Top Floating Header -->
     <header class="mx-4 mt-4 lg:mx-8 lg:mt-6 z-45 shrink-0">
         <div class="glass-panel rounded-3xl px-5 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -84,18 +108,32 @@
                     <h1 class="text-lg font-bold text-apple-darkText tracking-tight flex items-center gap-2">
                         <span>TEMPLATE M-FLOW</span>
                         <span id="cloudStatusBadge" class="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> กำลังเชื่อมต่อ Cloud...
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> กำลังเชื่อมต่อ...
                         </span>
                     </h1>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+                <!-- ปุ่มแสดงโปรไฟล์ปัจจุบัน & ปุ่มลงชื่อออก -->
+                <div class="flex items-center gap-1 bg-blue-50/80 p-1 rounded-full border border-blue-200 shadow-sm">
+                    <button onclick="showProfileSelector()" class="px-3 h-8 flex items-center justify-center gap-2 text-xs font-bold text-apple-blue hover:bg-blue-100/80 rounded-full transition-all" title="เปลี่ยนโปรไฟล์">
+                        <div id="headerProfileAvatar" class="w-5 h-5 rounded-full bg-apple-blue text-white flex items-center justify-center text-[10px] overflow-hidden shrink-0">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span id="currentProfileNameBadge">โปรไฟล์: ...</span>
+                    </button>
+                    <button onclick="logoutProfile()" class="px-2.5 h-8 flex items-center justify-center gap-1 text-[11px] font-semibold text-red-500 hover:bg-red-50 rounded-full transition-all" title="ลงชื่อออกจากโปรไฟล์นี้">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden sm:inline">ลงชื่อออก</span>
+                    </button>
+                </div>
+
                 <button onclick="backupToCloud()" class="px-4 h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 bg-white/70 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="สำรองข้อมูลขึ้น Cloud และโหลดไฟล์ JSON">
                     <i class="fa-solid fa-cloud-arrow-up text-apple-blue"></i> <span>สำรองข้อมูล</span>
                 </button>
                 <button onclick="triggerImport()" class="px-4 h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 bg-white/70 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="ดึงข้อมูลล่าสุดจาก Cloud หรือไฟล์">
-                    <i class="fa-solid fa-cloud-arrow-down text-apple-green"></i> <span>นำเข้า (Cloud/File)</span>
+                    <i class="fa-solid fa-cloud-arrow-down text-apple-green"></i> <span>นำเข้า</span>
                 </button>
                 <input type="file" id="importFileInput" accept=".json, .txt" class="hidden" onchange="handleFileImport(event)">
                 
@@ -112,7 +150,7 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2">
             <div class="flex items-center gap-2 opacity-70">
                 <i class="fa-solid fa-shield-halved text-apple-blue text-sm"></i>
-                <span class="text-xs text-slate-600 font-medium">ระบบซิงค์ข้อมูลอัตโนมัติผ่าน Firebase Cloud รองรับการใช้งานทุกเครื่อง</span>
+                <span class="text-xs text-slate-600 font-medium">ระบบคลาวด์แยกอิสระรายโปรไฟล์ ซิงค์ข้อมูลอัตโนมัติ</span>
             </div>
             <div class="flex items-center gap-2">
                 <span class="text-[11px] font-semibold bg-white/60 text-slate-700 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white shadow-sm">
@@ -230,7 +268,7 @@
         </section>
     </main>
 
-    <!-- Modals (New Template & Delete Confirm) -->
+    <!-- Modals (New Template) -->
     <div id="newTemplateModal" class="hidden fixed inset-0 z-50 bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
         <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-xl border border-white p-6 flex flex-col">
             <h3 class="font-bold text-apple-darkText flex items-center gap-2 mb-4">
@@ -248,33 +286,92 @@
         </div>
     </div>
 
+    <!-- Modal สร้างโปรไฟล์ใหม่ -->
+    <div id="createProfileModal" class="hidden fixed inset-0 z-[110] bg-black/30 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-md border border-white p-6 flex flex-col max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-apple-darkText flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-apple-blue flex items-center justify-center"><i class="fa-solid fa-user-plus text-sm"></i></div>
+                เพิ่มโปรไฟล์ผู้ใช้งานใหม่
+            </h3>
+            <form onsubmit="handleCreateProfile(event)" class="space-y-4">
+                <!-- อัปโหลดรูปโปรไฟล์ -->
+                <div class="flex flex-col items-center justify-center gap-2">
+                    <div class="relative w-20 h-20 rounded-full border-2 border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center group cursor-pointer" onclick="document.getElementById('newProfileAvatarInput').click()">
+                        <img id="avatarPreview" class="w-full h-full object-cover hidden" alt="Avatar">
+                        <div id="avatarPlaceholder" class="flex flex-col items-center text-slate-400">
+                            <i class="fa-solid fa-camera text-xl"></i>
+                            <span class="text-[10px] mt-1 font-semibold">เลือกรูป</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">
+                            เปลี่ยนรูป
+                        </div>
+                    </div>
+                    <input type="file" id="newProfileAvatarInput" accept="image/*" class="hidden" onchange="handleAvatarSelect(event)">
+                    <span class="text-[11px] text-slate-500">คลิกเพื่อเพิ่มรูปโปรไฟล์ (ตัวเลือกเพิ่มเติม)</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อโปรไฟล์ / ชื่อผู้ใช้งาน <span class="text-red-500">*</span></label>
+                    <input type="text" id="newProfileNameInput" required placeholder="เช่น พี่สมชาย, กะเช้า ฯลฯ" class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">รหัสผ่านสำหรับเข้าโปรไฟล์ (ไม่บังคับ)</label>
+                    <input type="password" id="newProfilePasswordInput" placeholder="เว้นว่างไว้หากไม่ต้องการตั้งรหัสผ่าน" class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
+                    <p class="text-[10px] text-slate-400 mt-1">* หากตั้งรหัสผ่าน ระบบจะขอให้ยืนยันรหัสผ่านก่อนเข้าใช้งาน</p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeCreateProfileModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-apple-blue text-white rounded-full text-sm font-bold shadow-md">สร้างโปรไฟล์</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal กรอกรหัสผ่านสำหรับโปรไฟล์ที่มีรหัส -->
+    <div id="passwordPromptModal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white p-6 flex flex-col items-center text-center">
+            <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-3">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="font-bold text-apple-darkText text-base mb-1">ยืนยันรหัสผ่าน</h3>
+            <p id="passwordPromptProfileName" class="text-xs text-slate-500 mb-4">โปรไฟล์นี้ถูกล็อกไว้ด้วยรหัสผ่าน</p>
+            <form onsubmit="handleVerifyPassword(event)" class="w-full space-y-3">
+                <input type="password" id="profilePasswordInput" required placeholder="กรอกรหัสผ่าน..." class="w-full px-4 py-3 rounded-2xl glass-input text-sm text-center">
+                <div class="flex gap-2 pt-1">
+                    <button type="button" onclick="closePasswordPromptModal()" class="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-2xl text-xs font-semibold">ยกเลิก</button>
+                    <button type="submit" class="flex-1 py-2.5 bg-apple-blue text-white rounded-2xl text-xs font-bold shadow-md">เข้าใช้งาน</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
-    <div id="toastNotification" class="fixed top-6 left-1/2 -translate-x-1/2 z-[70] transform -translate-y-20 opacity-0 transition-all duration-400 ease-out bg-black/80 backdrop-blur-xl text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 pointer-events-none border border-white/10">
+    <div id="toastNotification" class="fixed top-6 left-1/2 -translate-x-1/2 z-[130] transform -translate-y-20 opacity-0 transition-all duration-400 ease-out bg-black/80 backdrop-blur-xl text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 pointer-events-none border border-white/10">
         <div id="toastIconContainer"></div>
         <p id="toastMessage" class="font-medium"></p>
     </div>
 
     <script>
         // ==========================================
-        // FIREBASE CONFIGURATION (แทนที่ด้วยค่าของคุณ)
+        // FIREBASE CONFIGURATION
         // ==========================================
         const firebaseConfig = {
-    apiKey: "AIzaSyAuL7PRpKl9ha_qQix8eVeVzkVQ7F8AdyY",
-    authDomain: "template-m-flow.firebaseapp.com",
-    projectId: "template-m-flow",
-    storageBucket: "template-m-flow.firebasestorage.app",
-    messagingSenderId: "265142411995",
-    appId: "1:265142411995:web:68a22fb7196aba90ffe2fe"
-  };
+            apiKey: "AIzaSyAuL7PRpKl9ha_qQix8eVeVzkVQ7F8AdyY",
+            authDomain: "template-m-flow.firebaseapp.com",
+            projectId: "template-m-flow",
+            storageBucket: "template-m-flow.firebasestorage.app",
+            messagingSenderId: "265142411995",
+            appId: "1:265142411995:web:68a22fb7196aba90ffe2fe"
+        };
 
-        // Initialize Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
         const db = firebase.firestore();
-        const CLOUD_DOC_REF = db.collection("mflow_reports").doc("shared_workspace");
 
-        // Default Templates Setup
+        // Default Templates Setup (สำหรับโปรไฟล์ใหม่เริ่มต้น)
         const defaultTemplates = [
             {
                 id: "sla-8-min",
@@ -293,42 +390,270 @@
             }
         ];
 
+        let currentProfileId = localStorage.getItem('mflow_current_profile_id') || "";
+        let currentProfileName = localStorage.getItem('mflow_current_profile_name') || "";
         let templates = [];
-        let inputValuesMap = {}; // เก็บค่าที่กรอกแยกตาม templateId_subIndex
+        let inputValuesMap = {}; 
         let selectedTemplateId = "";
         let currentTab = 'form';
+        
+        let tempAvatarDataUrl = ""; // เก็บ Base64 สำหรับอัปโหลดรูป
+        let selectedProfileObj = null; // เก็บข้อมูลโปรไฟล์ชั่วคราวตอนเช็กรหัสผ่าน
 
         window.onload = async function() {
             updateClock();
             setInterval(updateClock, 1000);
-            await loadDataFromCloudOrLocal();
+            await checkAndInitProfiles();
         };
 
-        // โหลดข้อมูลจาก Firebase Cloud (หากไม่มีใช้ LocalStorage / Default)
-        async function loadDataFromCloudOrLocal() {
+        // ตรวจสอบและโหลดรายชื่อโปรไฟล์จาก Cloud
+        async function checkAndInitProfiles() {
             try {
-                const doc = await CLOUD_DOC_REF.get();
+                const metaDoc = await db.collection("mflow_reports").doc("system_profiles_meta").get();
+                let profiles = [];
+                if (metaDoc.exists) {
+                    profiles = metaDoc.data().profiles || [];
+                }
+
+                if (profiles.length === 0) {
+                    profiles = [{ id: "default_admin", name: "แอดมินหลัก", avatar: "", password: "" }];
+                    await db.collection("mflow_reports").doc("system_profiles_meta").set({ profiles });
+                    
+                    await db.collection("mflow_reports").doc("profile_default_admin").set({
+                        templates: defaultTemplates,
+                        inputValuesMap: {},
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+
+                const currentP = profiles.find(p => p.id === currentProfileId);
+
+                if (!currentProfileId || !currentP) {
+                    renderProfileSelectionList(profiles);
+                    document.getElementById('profileSelectionOverlay').classList.remove('hidden');
+                } else {
+                    document.getElementById('profileSelectionOverlay').classList.add('hidden');
+                    document.getElementById('currentProfileNameBadge').innerText = `โปรไฟล์: ${currentProfileName}`;
+                    updateHeaderAvatar(currentP.avatar || '');
+                    await loadDataForCurrentProfile();
+                }
+            } catch (err) {
+                console.warn("Offline or Cloud error, fallback to local profiles", err);
+                currentProfileId = currentProfileId || "default_admin";
+                currentProfileName = currentProfileName || "แอดมินหลัก";
+                document.getElementById('profileSelectionOverlay').classList.add('hidden');
+                document.getElementById('currentProfileNameBadge').innerText = `โปรไฟล์: ${currentProfileName}`;
+                await loadDataForCurrentProfile();
+            }
+        }
+
+        async function showProfileSelector() {
+            try {
+                const metaDoc = await db.collection("mflow_reports").doc("system_profiles_meta").get();
+                const profiles = metaDoc.exists ? metaDoc.data().profiles : [{ id: currentProfileId, name: currentProfileName }];
+                renderProfileSelectionList(profiles);
+                document.getElementById('profileSelectionOverlay').classList.remove('hidden');
+            } catch (e) {
+                renderProfileSelectionList([{ id: currentProfileId, name: currentProfileName }]);
+                document.getElementById('profileSelectionOverlay').classList.remove('hidden');
+            }
+        }
+
+        function renderProfileSelectionList(profiles) {
+            const container = document.getElementById('profileListContainer');
+            container.innerHTML = '';
+            profiles.forEach(p => {
+                const isSelected = p.id === currentProfileId;
+                const hasPassword = p.password && p.password.trim() !== '';
+
+                const btn = document.createElement('button');
+                btn.className = `w-full p-3.5 rounded-2xl flex items-center justify-between transition-all border ${
+                    isSelected ? 'bg-blue-50 border-blue-300 text-apple-blue font-bold shadow-sm' : 'bg-white/80 border-white/80 text-slate-700 hover:bg-white'
+                }`;
+                btn.onclick = () => requestProfileAccess(p);
+
+                const avatarHtml = p.avatar 
+                    ? `<img src="${p.avatar}" class="w-9 h-9 rounded-xl object-cover shrink-0 shadow-sm">`
+                    : `<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0"><i class="fa-solid fa-user text-sm"></i></div>`;
+
+                const lockIconHtml = hasPassword 
+                    ? `<span class="text-amber-500 text-xs ml-1" title="ล็อกรหัสผ่าน"><i class="fa-solid fa-lock"></i></span>` 
+                    : '';
+
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        ${avatarHtml}
+                        <div class="flex items-center gap-1.5 truncate">
+                            <span class="text-sm truncate">${p.name}</span>
+                            ${lockIconHtml}
+                        </div>
+                    </div>
+                    <span class="text-xs font-semibold px-3 py-1 rounded-full shrink-0 ${isSelected ? 'bg-apple-blue text-white' : 'bg-slate-100 text-slate-500'}">
+                        ${isSelected ? 'ใช้งานอยู่' : 'เข้าใช้งาน'}
+                    </span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function requestProfileAccess(p) {
+            if (p.password && p.password.trim() !== '') {
+                selectedProfileObj = p;
+                document.getElementById('passwordPromptProfileName').innerText = `โปรไฟล์: ${p.name}`;
+                document.getElementById('profilePasswordInput').value = '';
+                document.getElementById('passwordPromptModal').classList.remove('hidden');
+                setTimeout(() => document.getElementById('profilePasswordInput').focus(), 100);
+            } else {
+                selectProfile(p.id, p.name, p.avatar);
+            }
+        }
+
+        function closePasswordPromptModal() {
+            document.getElementById('passwordPromptModal').classList.add('hidden');
+            selectedProfileObj = null;
+        }
+
+        function handleVerifyPassword(event) {
+            event.preventDefault();
+            if (!selectedProfileObj) return;
+            const inputPwd = document.getElementById('profilePasswordInput').value;
+            if (inputPwd === selectedProfileObj.password) {
+                closePasswordPromptModal();
+                selectProfile(selectedProfileObj.id, selectedProfileObj.name, selectedProfileObj.avatar);
+            } else {
+                showToast('error', 'รหัสผ่านไม่ถูกต้อง');
+                document.getElementById('profilePasswordInput').value = '';
+                document.getElementById('profilePasswordInput').focus();
+            }
+        }
+
+        async function selectProfile(id, name, avatar = '') {
+            currentProfileId = id;
+            currentProfileName = name;
+            localStorage.setItem('mflow_current_profile_id', id);
+            localStorage.setItem('mflow_current_profile_name', name);
+            
+            document.getElementById('currentProfileNameBadge').innerText = `โปรไฟล์: ${name}`;
+            updateHeaderAvatar(avatar);
+
+            document.getElementById('profileSelectionOverlay').classList.add('hidden');
+            await loadDataForCurrentProfile();
+            showToast('save', `เข้าสู่โปรไฟล์: ${name} สำเร็จ`);
+        }
+
+        function updateHeaderAvatar(avatarUrl) {
+            const container = document.getElementById('headerProfileAvatar');
+            if (avatarUrl) {
+                container.innerHTML = `<img src="${avatarUrl}" class="w-full h-full object-cover">`;
+            } else {
+                container.innerHTML = `<i class="fa-solid fa-user"></i>`;
+            }
+        }
+
+        // ลงชื่อออกจากโปรไฟล์ปัจจุบัน (Soft Reset)
+        function logoutProfile() {
+            currentProfileId = "";
+            currentProfileName = "";
+            localStorage.removeItem('mflow_current_profile_id');
+            localStorage.removeItem('mflow_current_profile_name');
+            document.getElementById('currentProfileNameBadge').innerText = "โปรไฟล์: ยังไม่ได้เลือก";
+            document.getElementById('headerProfileAvatar').innerHTML = `<i class="fa-solid fa-user"></i>`;
+            showProfileSelector();
+            showToast('delete', 'ลงชื่อออกจากระบบเรียบร้อย');
+        }
+
+        function openCreateProfileModal() {
+            tempAvatarDataUrl = "";
+            document.getElementById('avatarPreview').classList.add('hidden');
+            document.getElementById('avatarPlaceholder').classList.remove('hidden');
+            document.getElementById('newProfileNameInput').value = '';
+            document.getElementById('newProfilePasswordInput').value = '';
+            document.getElementById('createProfileModal').classList.remove('hidden');
+        }
+
+        function closeCreateProfileModal() {
+            document.getElementById('createProfileModal').classList.add('hidden');
+        }
+
+        function handleAvatarSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempAvatarDataUrl = e.target.result;
+                const preview = document.getElementById('avatarPreview');
+                preview.src = tempAvatarDataUrl;
+                preview.classList.remove('hidden');
+                document.getElementById('avatarPlaceholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleCreateProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('newProfileNameInput').value.trim();
+            const password = document.getElementById('newProfilePasswordInput').value;
+            if (!name) return;
+
+            const newId = 'profile_' + Date.now();
+            try {
+                const metaRef = db.collection("mflow_reports").doc("system_profiles_meta");
+                const doc = await metaRef.get();
+                let profiles = doc.exists ? doc.data().profiles || [] : [];
+                
+                profiles.push({ 
+                    id: newId, 
+                    name: name,
+                    avatar: tempAvatarDataUrl || '',
+                    password: password || ''
+                });
+                
+                await metaRef.set({ profiles });
+
+                await db.collection("mflow_reports").doc(`profile_${newId}`).set({
+                    templates: defaultTemplates,
+                    inputValuesMap: {},
+                    updatedAt: new Date().toISOString()
+                });
+
+                closeCreateProfileModal();
+                selectProfile(newId, name, tempAvatarDataUrl);
+            } catch (err) {
+                showToast('error', 'ไม่สามารถสร้างโปรไฟล์ใหม่บน Cloud ได้');
+            }
+        }
+
+        // ดึง Reference เอกสาร Cloud แยกตามโปรไฟล์ปัจจุบัน
+        function getCloudDocRef() {
+            return db.collection("mflow_reports").doc(`profile_${currentProfileId}`);
+        }
+
+        // โหลดข้อมูล Template และ Input ตามโปรไฟล์ปัจจุบันจาก Cloud หรือ LocalStorage
+        async function loadDataForCurrentProfile() {
+            const cloudRef = getCloudDocRef();
+            try {
+                const doc = await cloudRef.get();
                 if (doc.exists) {
                     const cloudData = doc.data();
                     templates = cloudData.templates || defaultTemplates;
                     inputValuesMap = cloudData.inputValuesMap || {};
-                    updateCloudBadge(true, "เชื่อมต่อ Cloud สำเร็จ");
+                    updateCloudBadge(true, `ซิงค์ Cloud (${currentProfileName})`);
                 } else {
                     templates = defaultTemplates;
                     inputValuesMap = {};
                     await saveToCloudSilent();
-                    updateCloudBadge(true, "สร้างข้อมูลบน Cloud สำเร็จ");
+                    updateCloudBadge(true, `สร้างข้อมูลใหม่บน Cloud`);
                 }
             } catch (err) {
                 console.warn("Cloud connection offline, falling back to local storage", err);
-                const stored = localStorage.getItem('routine_templates_v4');
-                const storedInputs = localStorage.getItem('routine_inputs_v4');
+                const stored = localStorage.getItem(`routine_templates_${currentProfileId}`);
+                const storedInputs = localStorage.getItem(`routine_inputs_${currentProfileId}`);
                 templates = stored ? JSON.parse(stored) : defaultTemplates;
                 inputValuesMap = storedInputs ? JSON.parse(storedInputs) : {};
                 updateCloudBadge(false, "ออฟไลน์ (ใช้ Local)");
             }
 
-            selectedTemplateId = localStorage.getItem('routine_selected_id_v4') || templates[0]?.id || "";
+            selectedTemplateId = localStorage.getItem(`routine_selected_id_${currentProfileId}`) || templates[0]?.id || "";
             renderTopicsList();
             loadTemplate(selectedTemplateId);
         }
@@ -344,11 +669,11 @@
         async function saveToCloud() {
             try {
                 const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
-                await CLOUD_DOC_REF.set(data);
-                localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
-                localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
+                await getCloudDocRef().set(data);
+                localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
+                localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
                 showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
-                updateCloudBadge(true, "ซิงค์กับ Cloud แล้ว");
+                updateCloudBadge(true, `ซิงค์กับ Cloud (${currentProfileName})`);
             } catch (err) {
                 showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้');
             }
@@ -357,9 +682,9 @@
         async function saveToCloudSilent() {
             try {
                 const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
-                await CLOUD_DOC_REF.set(data);
-                localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
-                localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
+                await getCloudDocRef().set(data);
+                localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
+                localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
             } catch (e) {}
         }
 
@@ -370,7 +695,6 @@
                 now.toLocaleTimeString('th-TH', { hour12: false });
         }
 
-        // Smart Parser ดึงจุดที่ต้องกรอก (...)
         function getTemplateMatches(content) {
             const matches = [];
             if (!content) return matches;
@@ -436,7 +760,7 @@
             if (!selected) return;
 
             selectedTemplateId = id;
-            localStorage.setItem('routine_selected_id_v4', id);
+            localStorage.setItem(`routine_selected_id_${currentProfileId}`, id);
             renderTopicsList();
             document.getElementById('activeTemplateTitle').innerText = selected.title;
 
@@ -480,7 +804,6 @@
             });
         }
 
-        // Key สำหรับเก็บค่าใน inputValuesMap แบบแยกระหว่าง Template และ SubPeriod
         function getCurrentKey(idx) {
             const subIdx = templates.find(t => t.id === selectedTemplateId)?.activeSubPeriodIndex ?? 0;
             return `${selectedTemplateId}_sub${subIdx}_field${idx}`;
@@ -505,7 +828,6 @@
                 formGroup.id = `fieldCard-${idx}`;
                 formGroup.className = `p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 ${currentValue === '' ? 'border-red-300 bg-red-50/75' : 'border-white/80 bg-white/80'}`;
 
-                // ปุ่มตัวช่วยด่วน (Date / Time / M-Flow C1-C3)
                 let helpers = '';
                 const lbl = m.label.toLowerCase();
                 if (lbl.includes('วันที่') || lbl.includes('date')) {
@@ -541,7 +863,6 @@
             if (target) { target.value = val; updateInputVal(idx, val); }
         }
 
-        // อัปเดตค่าและคงไว้บน Cloud ทันทีตามเงื่อนไขข้อ 3
         function updateInputVal(idx, val) {
             const mapKey = getCurrentKey(idx);
             inputValuesMap[mapKey] = val;
@@ -553,7 +874,7 @@
                 if (dot) dot.className = `w-2 h-2 rounded-full ${val.trim() === '' ? 'bg-red-500' : 'bg-apple-green'}`;
             }
             computeOutput();
-            saveToCloudSilent(); // ซิงค์ค่าเก็บไว้บนคลาวด์แบบอัตโนมัติ
+            saveToCloudSilent();
         }
 
         function computeOutput() {
@@ -587,7 +908,6 @@
 
         function escapeHTML(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        // ล้างค่าเฉพาะเทมเพลต/ช่วงเวลานั้นๆ
         function clearCurrentTemplateFields() {
             const selected = templates.find(t => t.id === selectedTemplateId);
             if (!selected) return;
@@ -600,30 +920,30 @@
             showToast('delete', 'ล้างค่าในเทมเพลตนี้แล้ว');
         }
 
-        // ระบบสำรองข้อมูลขึ้น Cloud & Export JSON (ข้อ 2)
         async function backupToCloud() {
             await saveToCloud();
-            // ส่งออกเป็นไฟล์สำรองลงเครื่องด้วย
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ templates, inputValuesMap }, null, 2));
-            const a = document.createElement('a'); a.href = dataStr; a.download = `mflow_backup_${Date.now()}.json`;
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ profile: currentProfileName, templates, inputValuesMap }, null, 2));
+            const a = document.createElement('a'); a.href = dataStr; a.download = `mflow_${currentProfileId}_backup_${Date.now()}.json`;
             document.body.appendChild(a); a.click(); a.remove();
         }
 
-        // นำเข้าข้อมูล (ดึงจาก Cloud หรืออัปโหลดไฟล์) (ข้อ 2)
         async function triggerImport() {
             try {
-                const doc = await CLOUD_DOC_REF.get();
-                if (doc.exists && confirm("พบข้อมูลสำรองบน Cloud! ต้องการโหลดข้อมูลล่าสุดจาก Cloud หรือไม่? (กด Cancel เพื่อเลือกไฟล์ JSON จากเครื่อง)")) {
-                    const cloudData = doc.data();
-                    templates = cloudData.templates || defaultTemplates;
-                    inputValuesMap = cloudData.inputValuesMap || {};
-                    localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
-                    localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
-                    selectedTemplateId = templates[0]?.id || "";
-                    renderTopicsList();
-                    loadTemplate(selectedTemplateId);
-                    showToast('save', 'ดึงข้อมูลจาก Cloud สำเร็จ');
-                    return;
+                const doc = await getCloudDocRef().get();
+                if (doc.exists) {
+                    const loadCloud = confirm(`พบข้อมูลสำรองบน Cloud ของโปรไฟล์ (${currentProfileName})!\n\n- กด 'ตกลง' เพื่อโหลดข้อมูลล่าสุดจาก Cloud\n- กด 'ยกเลิก' เพื่อเลือกไฟล์ JSON จากเครื่อง`);
+                    if (loadCloud) {
+                        const cloudData = doc.data();
+                        templates = cloudData.templates || defaultTemplates;
+                        inputValuesMap = cloudData.inputValuesMap || {};
+                        localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
+                        localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
+                        selectedTemplateId = templates[0]?.id || "";
+                        renderTopicsList();
+                        loadTemplate(selectedTemplateId);
+                        showToast('save', 'ดึงข้อมูลจาก Cloud สำเร็จ');
+                        return;
+                    }
                 }
             } catch (e) {}
             document.getElementById('importFileInput').click();
@@ -653,14 +973,13 @@
             event.target.value = '';
         }
 
-        // Copy to clipboard และคงค่าไว้จนกว่าจะกดล้าง
         function copyToClipboard() {
             const text = document.getElementById('outputDisplay').value;
             navigator.clipboard.writeText(text).then(() => {
                 const feedback = document.getElementById('copyFeedback');
                 feedback.classList.remove('opacity-0');
                 feedback.classList.add('opacity-100');
-                showToast('copy', 'คัดลอกรายงานเรียบร้อย (ค่าในฟอร์มยังคงอยู่)');
+                showToast('copy', 'คัดลอกรายงานเรียบร้อย');
                 setTimeout(() => feedback.classList.replace('opacity-100', 'opacity-0'), 2500);
             });
         }
@@ -699,6 +1018,8 @@
             templates.push({ id, title, content });
             await saveToCloud();
             closeNewTemplateModal();
+            document.getElementById('newTitleInput').value = '';
+            document.getElementById('newTemplateContent').value = '';
             selectedTemplateId = id;
             renderTopicsList();
             loadTemplate(id);
