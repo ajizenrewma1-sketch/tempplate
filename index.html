@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" class="h-full bg-slate-50">
+<html lang="th" class="h-full antialiased">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&family=Sarabun:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome Pro alternative via CDN for clean, modern interface icons -->
+    <!-- FontAwesome Pro alternative via CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script>
@@ -22,9 +22,30 @@
                         sans: ['Sarabun', 'Inter', 'sans-serif'],
                     },
                     boxShadow: {
-                        'premium': '0 10px 30px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-                        'amber-glow': '0 4px 20px -2px rgba(245, 158, 11, 0.15)',
-                        'rose-glow': '0 4px 20px -2px rgba(244, 63, 94, 0.15)',
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'glass-inset': 'inset 0 0 0 1px rgba(255, 255, 255, 0.4)',
+                        'glass-floating': '0 20px 40px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
+                        'apple-btn': '0 1px 2px rgba(0,0,0,0.04), 0 1px 2px rgba(255,255,255,0.5) inset',
+                    },
+                    colors: {
+                        apple: {
+                            blue: '#007AFF',
+                            green: '#34C759',
+                            gray: '#F2F2F7',
+                            darkText: '#1C1C1E',
+                            subText: '#8E8E93'
+                        }
+                    },
+                    animation: {
+                        'blob': 'blob 10s infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
                     }
                 }
             }
@@ -36,254 +57,239 @@
             font-family: 'Sarabun', 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            background-color: #e2e8f0; /* ปรับพื้นหลังให้เข้มขึ้นเล็กน้อย ดันให้เลเยอร์กระจกโดดเด่น */
         }
-        /* Custom scrollbar to keep layout clean and minimal */
+        /* Custom sleek scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: rgba(0,0,0,0.15);
             border-radius: 9999px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: rgba(0,0,0,0.3);
         }
-        /* Bounce and glow keyframes for premium UI feel */
-        @keyframes subtle-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.95; }
-            50% { transform: scale(1.02); opacity: 1; }
+        
+        /* Glassmorphism utility classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.52);
+            backdrop-filter: blur(40px) saturate(190%);
+            -webkit-backdrop-filter: blur(40px) saturate(190%);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 40px -10px rgba(31, 38, 135, 0.22), inset 0 1px 1px 0 rgba(255, 255, 255, 0.9);
         }
-        .live-pulse {
-            animation: subtle-pulse 3s infinite ease-in-out;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.62);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.75);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02);
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.92);
+            border-color: rgba(0, 122, 255, 0.5);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2), inset 0 1px 2px rgba(0,0,0,0.02);
         }
     </style>
 </head>
-<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-emerald-100 selection:text-emerald-900 overflow-hidden">
+<body class="h-full flex flex-col text-apple-darkText selection:bg-blue-100 selection:text-apple-blue overflow-hidden relative">
 
-    <!-- Top premium navigation bar -->
-    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 transition-all shrink-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <!-- Abstract Ambient Background (Mesh Gradient effect) -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-slate-200">
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob"></div>
+        <div class="absolute top-[20%] right-[-10%] w-[45vw] h-[45vw] bg-purple-600/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob" style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] bg-teal-500/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob" style="animation-delay: 4s;"></div>
+    </div>
+
+    <!-- Top Floating Header -->
+    <header class="mx-4 mt-4 lg:mx-8 lg:mt-6 z-40 transition-all shrink-0">
+        <div class="glass-panel rounded-3xl px-5 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
             
-            <!-- Logo area & brand description -->
+            <!-- Logo area -->
             <div class="flex items-center gap-3.5">
-                <div class="p-2.5 bg-gradient-to-tr from-emerald-500 to-teal-400 text-white rounded-xl shadow-md shadow-emerald-200">
-                    <i class="fa-solid fa-rectangle-list text-xl"></i>
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-b from-blue-500 to-apple-blue text-white flex items-center justify-center shadow-md shadow-blue-200">
+                    <i class="fa-solid fa-layer-group text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 tracking-tight flex items-center gap-2">
-                        <span>Daily Report Generator</span>
-                        <span class="text-[10px] bg-slate-100 text-slate-600 font-bold px-2 py-0.5 rounded-full border border-slate-200 uppercase tracking-widest">v3.1 PRO</span>
+                    <h1 class="text-lg font-bold text-apple-darkText tracking-tight flex items-center gap-2">
+                        <span>TEMPLATE</span>
+                        <span class="text-[10px] bg-black/5 text-slate-500 font-bold px-2 py-0.5 rounded-full border border-black/5 uppercase tracking-widest">M-FLOW</span>
                     </h1>
-                    <p class="text-xs text-slate-500 font-medium">แผงจัดการข้อมูลรายงานประจำวันแบบรวดเร็วพิเศษ (รองรับนำเข้าไฟล์ .txt)</p>
                 </div>
             </div>
             
-            <!-- Quick global action controls -->
-            <div class="flex items-center gap-2.5 self-stretch sm:self-auto justify-end">
-                <button onclick="exportAllTemplates()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all" title="ส่งออกเทมเพลตทั้งหมดเป็นไฟล์สำรอง">
-                    <i class="fa-solid fa-file-export text-slate-400"></i> ส่งออกสำรอง
+            <!-- Quick actions -->
+            <div class="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-end">
+                <button onclick="exportAllTemplates()" class="w-9 h-9 sm:w-auto sm:px-4 sm:h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-apple-darkText bg-white/50 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="ส่งออกเป็นไฟล์สำรอง">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden sm:inline">สำรองข้อมูล</span>
                 </button>
-                <button onclick="triggerImport()" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all" title="นำเข้าไฟล์สำรอง (.json) หรือเทมเพลตดิบ (.txt)">
-                    <i class="fa-solid fa-file-import text-slate-400"></i> นำเข้า
+                <button onclick="triggerImport()" class="w-9 h-9 sm:w-auto sm:px-4 sm:h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-apple-darkText bg-white/50 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="นำเข้าไฟล์สำรอง (.json/.txt)">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> <span class="hidden sm:inline">นำเข้า</span>
                 </button>
-                <!-- ปรับให้รองรับไฟล์ .txt สำหรับการนำเข้าแบบด่วน -->
                 <input type="file" id="importFileInput" accept=".json, .txt" class="hidden" onchange="handleImport(event)">
                 
-                <span class="h-6 w-[1px] bg-slate-200 block mx-1"></span>
+                <span class="h-5 w-[1px] bg-slate-300/50 block mx-1"></span>
 
-                <button onclick="openNewTemplateModal()" class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 rounded-xl shadow-md shadow-slate-200 hover:-translate-y-0.5 transition-all duration-200">
-                    <i class="fa-solid fa-plus-circle text-emerald-400"></i> เพิ่มหัวข้อใหม่
+                <button onclick="openNewTemplateModal()" class="flex items-center justify-center gap-2 px-4 h-9 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-black rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                    <i class="fa-solid fa-plus text-[10px]"></i> เพิ่มหัวข้อ
                 </button>
             </div>
         </div>
     </header>
 
-    <div class="bg-gradient-to-r from-slate-50 via-white to-slate-50 py-2 px-4 border-b border-slate-100 shrink-0">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-            <div class="flex items-center gap-2">
-                <div class="flex space-x-1">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 block shadow-sm"></span>
-                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500 block shadow-sm"></span>
-                </div>
-                <span class="text-xs text-slate-400 font-medium">พิมพ์เครื่องหมายจุดสามจุด <span class="font-mono bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded text-[11px]">...</span> เพื่อให้ระบบสร้างช่องให้กรอกข้อมูลทันที</span>
+    <div class="mx-4 lg:mx-8 mt-3 shrink-0">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2">
+            <div class="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
+                <i class="fa-solid fa-lightbulb text-amber-500 text-sm"></i>
+                <span class="text-xs text-slate-500 font-medium">พิมพ์เครื่องหมาย <span class="font-mono bg-white/60 px-1.5 py-0.5 rounded-md border border-black/5 shadow-sm">...</span> เพื่อสร้างช่องกรอกข้อมูลอัตโนมัติ</span>
             </div>
-            <div class="flex items-center gap-3">
-                <span class="text-xs text-slate-500 font-semibold bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full flex items-center gap-1.5 border border-emerald-100">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-ping"></span>
+            <div class="flex items-center gap-2">
+                <span class="text-[11px] font-semibold bg-white/50 backdrop-blur-md text-slate-600 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white shadow-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-apple-green inline-block animate-pulse"></span>
                     <span id="currentTimeDisplay">--:--:--</span>
                 </span>
             </div>
         </div>
     </div>
 
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col lg:flex-row gap-6 overflow-hidden">
+    <main class="flex-1 w-full mx-auto p-4 lg:px-8 pb-6 flex flex-col lg:flex-row gap-5 overflow-hidden">
         
-        <!-- LEFT COLUMN: The Yellow Accent Sidebar (Topic selection list) -->
-        <section id="sidebarBox" class="w-full lg:w-[320px] flex flex-col bg-white rounded-2xl border-t-[6px] border-amber-400 shadow-premium shadow-amber-glow transition-all duration-300 overflow-hidden shrink-0">
-            <!-- Sidebar Header with sleek visual icons, count badges, and the close/collapse button -->
-            <div class="p-4 border-b border-slate-100 bg-gradient-to-b from-amber-50/40 to-transparent flex items-center justify-between shrink-0">
-                <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
-                        <i class="fa-solid fa-folder-open text-xs"></i>
-                    </div>
-                    <h2 class="font-bold text-slate-800 text-sm tracking-wide">รายการและหัวข้อรายงาน</h2>
-                </div>
+        <!-- LEFT COLUMN: Sidebar (Topic selection) -->
+        <section id="sidebarBox" class="w-full lg:w-[280px] xl:w-[320px] flex flex-col glass-panel rounded-3xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden shrink-0">
+            <!-- Sidebar Header -->
+            <div class="p-5 pb-3 flex items-center justify-between shrink-0">
+                <h2 class="font-bold text-apple-darkText text-sm tracking-wide">รายการหัวข้อรายงาน</h2>
                 <div class="flex items-center gap-1.5">
-                    <span id="totalTemplatesCount" class="text-[11px] font-extrabold bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-full">0 หัวข้อ</span>
-                    
-                    <!-- Inline collapse/hide button on the Yellow Box directly -->
-                    <button onclick="toggleSidebar()" class="w-6 h-6 rounded-md hover:bg-amber-100 text-amber-600 hover:text-amber-800 flex items-center justify-center transition-all" title="ซ่อนแถบรายการ">
-                        <i class="fa-solid fa-angles-left text-xs"></i>
+                    <span id="totalTemplatesCount" class="text-[10px] font-bold bg-black/5 text-slate-600 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="toggleSidebar()" class="w-7 h-7 rounded-full hover:bg-black/5 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all">
+                        <i class="fa-solid fa-bars-staggered text-xs"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Search Filter Bar with crisp styling -->
-            <div class="p-3 border-b border-slate-50 shrink-0">
+            <!-- Search Filter -->
+            <div class="px-4 pb-3 shrink-0">
                 <div class="relative">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
-                    <input type="text" id="searchBar" oninput="filterTemplates()" placeholder="ค้นหาตามชื่อหัวข้อ..." class="w-full pl-9 pr-4 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-transparent transition-all placeholder:text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchBar" oninput="filterTemplates()" placeholder="ค้นหาตามชื่อหัวข้อ..." class="w-full pl-8 pr-4 py-2 text-xs sm:text-sm rounded-xl glass-input placeholder:text-slate-400 transition-all">
                 </div>
             </div>
 
-            <!-- LIST OF TOPICS: Beautiful rounded lists with micro-transitions -->
-            <div id="topicsList" class="flex-1 overflow-y-auto p-2.5 space-y-1.5 max-h-[220px] lg:max-h-none min-h-[140px]">
-                <!-- Filled dynamically by JavaScript -->
-            </div>
-
-            <!-- Sidebar bottom context helper -->
-            <div class="p-3 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 rounded-b-2xl flex items-center gap-1.5 shrink-0">
-                <i class="fa-solid fa-hand-pointer text-amber-500 text-xs"></i>
-                <span>คลิกชื่อหัวข้อเพื่อโหลดแบบฟอร์มด้านขวา</span>
+            <!-- Topics List -->
+            <div id="topicsList" class="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5 max-h-[200px] lg:max-h-none min-h-[100px]">
+                <!-- Filled dynamically -->
             </div>
         </section>
 
-        <!-- RIGHT COLUMN: The Red/Rose Accent Panel -->
-        <section id="detailsBox" class="flex-1 flex flex-col bg-white rounded-2xl border-t-[6px] border-rose-500 shadow-premium shadow-rose-glow transition-all duration-300 overflow-hidden">
+        <!-- RIGHT COLUMN: Main Content Area -->
+        <section id="detailsBox" class="flex-1 flex flex-col glass-panel rounded-3xl transition-all duration-300 overflow-hidden relative shadow-glass-floating">
             
-            <!-- Main Content Area Control Header -->
-            <div class="p-4 border-b border-slate-100 bg-gradient-to-b from-rose-50/30 to-transparent flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shrink-0">
-                <div class="flex items-center gap-2.5">
-                    
-                    <!-- Sidebar Toggle Button (Customized for collapsing side bar) -->
-                    <button id="sidebarToggleBtn" onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900 flex items-center justify-center transition-all shadow-sm" title="ซ่อน/แสดง แถบรายการ">
-                        <i id="sidebarToggleIcon" class="fa-solid fa-indent text-sm"></i>
-                    </button>
-
-                    <div class="w-6.5 h-6.5 rounded-lg bg-rose-100 text-rose-600 flex items-center justify-center p-1.5">
-                        <i class="fa-solid fa-file-pen text-xs"></i>
-                    </div>
+            <!-- Content Header -->
+            <div class="px-5 py-4 border-b border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 bg-white/30">
+                <div class="flex items-center gap-3">
                     <div>
-                        <h2 class="font-extrabold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                        <h2 class="font-bold text-apple-darkText text-sm sm:text-base flex items-center gap-2">
                             <span id="activeTemplateTitle">...</span>
-                            <!-- เพิ่มปุ่มลบมาไว้ตรงนี้เพื่อให้เห็นชัดเจนว่าสามารถลบได้ง่าย -->
-                            <button id="headerDeleteBtn" onclick="deleteCurrentTemplate()" class="ml-1 w-6 h-6 rounded-full hover:bg-rose-100 text-rose-400 hover:text-rose-600 flex items-center justify-center transition-all" title="ลบหัวข้อรายงานนี้ออกอย่างถาวร">
-                                <i class="fa-solid fa-trash-can text-xs"></i>
-                            </button>
                         </h2>
-                        <p class="text-[10px] text-slate-400 font-medium">พิมพ์เว้นด้วยจุดสามจุด (...) เพื่อถอดรหัสและสร้างกล่องข้อความอัจฉริยะ</p>
                     </div>
+                    <button id="headerDeleteBtn" onclick="deleteCurrentTemplate()" class="ml-auto sm:ml-2 w-7 h-7 rounded-full hover:bg-red-50 text-red-400 hover:text-red-500 flex items-center justify-center transition-all" title="ลบหัวข้อรายงานนี้">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
                 </div>
                 
-                <!-- Toggle Form fill mode vs Raw Template Edit mode -->
-                <div class="flex items-center bg-slate-100 p-1 rounded-xl self-start sm:self-auto">
-                    <button id="tabFormBtn" onclick="switchTab('form')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-keyboard text-rose-500"></i>โหมดกรอกฟอร์ม
+                <!-- iOS Segmented Control Tab -->
+                <div class="flex items-center bg-black/5 p-1 rounded-xl self-start sm:self-auto backdrop-blur-md">
+                    <button id="tabFormBtn" onclick="switchTab('form')" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-check opacity-70"></i> กรอกฟอร์ม
                     </button>
-                    <button id="tabRawBtn" onclick="switchTab('raw')" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-pencil-square text-slate-400"></i>แก้ไขเทมเพลต
+                    <button id="tabRawBtn" onclick="switchTab('raw')" class="px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 hover:text-apple-darkText transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-nib opacity-70"></i> โครงร่าง
                     </button>
                 </div>
             </div>
 
-            <!-- Double Pane Workspace: Inputs (Left) and Live Text Output (Right) -->
-            <div class="flex-1 flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-slate-100 overflow-hidden">
+            <!-- Workspace Panes -->
+            <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
                 
-                <!-- PANE 1: Dynamic variables filling form -->
-                <div id="dynamicFormPane" class="w-full lg:w-1/2 p-4 overflow-y-auto space-y-3 flex flex-col min-w-0">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 shrink-0">
-                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase flex items-center gap-1">
-                            <i class="fa-solid fa-tasks text-rose-500"></i>ข้อมูลที่ต้องกรอกวันนี้
+                <!-- PANE 1: Dynamic Form -->
+                <div id="dynamicFormPane" class="w-full md:w-1/2 p-5 overflow-y-auto space-y-4 flex flex-col min-w-0 border-b md:border-b-0 md:border-r border-black/5 bg-white/40">
+                    <div class="flex items-center justify-between shrink-0">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-keyboard text-apple-blue"></i> ข้อมูลที่ต้องการ
                         </span>
-                        <button onclick="clearAllFields()" class="text-xs text-rose-500 hover:text-rose-700 font-semibold transition-all flex items-center gap-1">
-                            <i class="fa-solid fa-eraser"></i> ล้างข้อมูลทั้งหมด
+                        <button onclick="clearAllFields()" class="text-[11px] px-2.5 py-1 bg-white/50 hover:bg-white rounded-full text-slate-600 hover:text-red-500 font-bold transition-all shadow-sm border border-white flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-rotate-left"></i> ล้างค่า
                         </button>
                     </div>
 
-                    <!-- Sub-Period selection tab layout for multi-period templates -->
-                    <div id="subPeriodSelectorContainer" class="hidden bg-amber-50/50 border border-amber-200/50 rounded-xl p-2.5 space-y-2 shadow-sm shrink-0 min-w-0">
-                        <span class="text-xs font-extrabold text-amber-800 tracking-wide flex items-center gap-1.5">
-                            <i class="fa-solid fa-clock-rotate-left"></i> เลือกช่วงเวลารายงานเพื่อสลับเทมเพลต
-                        </span>
-                        <div id="subPeriodTabList" class="flex flex-row gap-1 w-full min-w-0">
+                    <!-- Sub-Period Segmented Control -->
+                    <div id="subPeriodSelectorContainer" class="hidden glass-card rounded-2xl p-2 shrink-0 min-w-0 shadow-sm">
+                        <div id="subPeriodTabList" class="flex flex-row bg-black/5 p-1 rounded-xl w-full min-w-0 gap-1">
                             <!-- Dynamic sub-period tab buttons go here -->
                         </div>
                     </div>
                     
-                    <!-- Container for generated fields formatted in stacked vertical order -->
-                    <div id="formFieldsContainer" class="flex-1 flex flex-col gap-2 overflow-y-auto pb-2 min-w-0">
-                        <!-- Dynamic Input elements created by JS will go here -->
-                        <div class="text-center py-12 text-slate-400">
-                            <i class="fa-solid fa-hand-pointer text-3xl mb-3 text-slate-300"></i>
-                            <p class="text-sm font-medium">โปรดเลือกหัวข้อรายงานจากกล่องซ้ายมือ<br>เพื่อเริ่มระบบถอดรหัสและกรอกข้อมูล</p>
+                    <!-- Dynamic Fields Container -->
+                    <div id="formFieldsContainer" class="flex-1 flex flex-col gap-3 overflow-y-auto pb-4 min-w-0">
+                        <div class="text-center py-16 text-slate-500">
+                            <i class="fa-brands fa-apple text-4xl mb-3 opacity-40"></i>
+                            <p class="text-sm font-medium">โปรดเลือกหัวข้อรายงาน</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- PANE 2: Raw template markup syntax code editor -->
-                <div id="rawEditPane" class="hidden w-full lg:w-1/2 p-4 flex flex-col gap-3 min-w-0">
-                    <div class="flex items-center justify-between border-b border-slate-50 pb-2">
-                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase">
-                            <i class="fa-solid fa-code text-rose-500 mr-1"></i>โครงร่างเทมเพลตข้อความ
-                        </span>
-                        <span class="text-[10px] bg-amber-50 text-amber-700 border border-amber-100 font-bold px-2 py-0.5 rounded-md">
-                            พิมพ์ข้อความแล้วพิมพ์ <code class="font-mono bg-white px-1.5 py-0.5 rounded font-bold">...</code> ในจุดที่ต้องการกรอกข้อมูล
+                <!-- PANE 2: Raw Template Editor -->
+                <div id="rawEditPane" class="hidden w-full md:w-1/2 p-5 flex flex-col gap-3 min-w-0 border-b md:border-b-0 md:border-r border-black/5 bg-white/40">
+                    <div class="flex items-center justify-between pb-1">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-code text-apple-blue"></i> โครงร่างต้นฉบับ
                         </span>
                     </div>
 
-                    <!-- Raw Edit Sub-period indicator if relevant -->
-                    <div id="rawSubPeriodWarning" class="hidden text-[11px] bg-rose-50 border border-rose-100 text-rose-700 p-2 rounded-lg">
-                        <i class="fa-solid fa-info-circle"></i> คุณกำลังแก้ไขเนื้อหาของช่วงเวลาที่เลือกอยู่ สลับช่วงเวลาในโหมดกรอกฟอร์มเพื่อแก้ไขช่วงอื่นๆ
+                    <div id="rawSubPeriodWarning" class="hidden text-[11px] bg-blue-50/50 border border-blue-100 text-blue-800 px-3 py-2 rounded-xl backdrop-blur-md">
+                        <i class="fa-solid fa-circle-info mr-1"></i> แก้ไขเฉพาะช่วงเวลาที่เลือกอยู่เท่านั้น
                     </div>
                     
-                    <textarea id="rawTextarea" oninput="onRawTemplateChange()" class="flex-1 w-full min-h-[220px] lg:min-h-0 p-4 text-xs sm:text-sm font-mono border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition-all bg-slate-50/50 leading-relaxed" placeholder="พิมพ์ตัวเทมเพลตต้นแบบที่นี่..."></textarea>
+                    <textarea id="rawTextarea" oninput="onRawTemplateChange()" class="flex-1 w-full min-h-[220px] p-4 text-[13px] font-mono border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-apple-blue/40 transition-all bg-white/80 backdrop-blur-md shadow-inner leading-relaxed resize-none text-slate-800" placeholder="พิมพ์โครงร่างเทมเพลตที่นี่..."></textarea>
                     
-                    <div class="flex gap-2.5 mt-1">
-                        <button onclick="saveTemplateChanges()" class="flex-1 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-extrabold shadow-sm shadow-rose-200 transition-all flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-save"></i> บันทึกโครงร่างใหม่
-                        </button>
-                    </div>
+                    <button onclick="saveTemplateChanges()" class="w-full py-3 mt-1 bg-slate-800 hover:bg-black text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> บันทึกโครงร่าง
+                    </button>
                 </div>
 
-                <!-- PANE 3: Ready to send output pane with one-click clipboard interaction -->
-                <div class="flex-1 p-4 bg-slate-50/60 flex flex-col overflow-hidden min-w-0">
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3 shrink-0">
-                        <span class="text-[11px] font-extrabold text-slate-400 tracking-wider uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-circle-check text-emerald-500"></i> ผลลัพธ์พร้อมส่ง (Final Output)
+                <!-- PANE 3: Ready to send output -->
+                <div class="flex-1 p-5 bg-gradient-to-br from-white/60 to-white/30 flex flex-col overflow-hidden min-w-0 relative">
+                    <div class="flex items-center justify-between mb-3 shrink-0">
+                        <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-paper-plane text-apple-green"></i> ผลลัพธ์พร้อมส่ง
                         </span>
-                        <span id="copyFeedback" class="text-xs font-bold text-emerald-700 opacity-0 transition-opacity duration-300 bg-emerald-100 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                            <i class="fa-solid fa-clipboard-check"></i> คัดลอกแล้ว!
+                        <span id="copyFeedback" class="text-[10px] font-bold text-apple-green opacity-0 transition-opacity duration-300 bg-white border border-green-200 px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
+                            <i class="fa-solid fa-check"></i> คัดลอกแล้ว
                         </span>
                     </div>
 
-                    <!-- Final Text Box Container with visual high-fidelity editor style -->
-                    <div class="flex-1 flex flex-col relative bg-white border border-slate-200/80 rounded-xl overflow-hidden shadow-inner min-h-0">
+                    <div class="flex-1 flex flex-col relative bg-white/90 backdrop-blur-xl border border-white/80 rounded-2xl overflow-hidden shadow-sm min-h-[200px]">
                         
-                        <!-- Rich Preview Div to display red highlighted badges for empty variables -->
-                        <div id="outputDisplayHTML" class="flex-1 p-4 text-xs sm:text-sm font-sans text-slate-800 overflow-y-auto whitespace-pre-wrap bg-white leading-relaxed select-text pb-16"></div>
+                        <div id="outputDisplayHTML" class="flex-1 p-5 text-[13px] sm:text-sm font-sans text-apple-darkText overflow-y-auto whitespace-pre-wrap leading-relaxed select-text pb-20"></div>
                         
-                        <!-- Hidden textarea for standard clean copying operations -->
                         <textarea id="outputDisplay" readonly class="hidden"></textarea>
                         
-                        <!-- Actions Float Bar at bottom for seamless UX -->
-                        <div class="absolute bottom-3 right-3 left-3 flex justify-between items-center gap-2 bg-gradient-to-t from-white via-white to-transparent pt-4">
-                            <span class="text-[10px] text-slate-400 hidden sm:block"><i class="fa-solid fa-info-circle"></i> กดปุ่มขวาเพื่อคัดลอกทันที</span>
-                            <button onclick="copyToClipboard()" class="ml-auto flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-700 hover:to-teal-600 text-white text-xs sm:text-sm font-extrabold rounded-xl shadow-lg shadow-emerald-200 transition-all hover:-translate-y-0.5 cursor-pointer" title="คัดลอกรายงานเพื่อใช้ส่งต่อ">
-                                <i class="fa-solid fa-copy"></i> คัดลอกรายงานนำไปส่งต่อ
+                        <!-- Floating Copy Button inside output -->
+                        <div class="absolute bottom-4 right-4 left-4 flex justify-end">
+                            <button onclick="copyToClipboard()" class="flex items-center gap-2 px-5 py-2.5 bg-apple-blue hover:bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 cursor-pointer backdrop-blur-md">
+                                <i class="fa-solid fa-copy"></i> คัดลอกรายงาน
                             </button>
                         </div>
                     </div>
@@ -292,78 +298,63 @@
         </section>
     </main>
 
-    <!-- MODAL CONTAINER: Create new routine template modal -->
-    <div id="newTemplateModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl shadow-premium w-full max-w-xl border border-slate-100 transform transition-all flex flex-col overflow-hidden">
-            <!-- Modal Header -->
-            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
-                <h3 class="font-extrabold text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-plus text-emerald-500 text-lg"></i> เพิ่มหัวข้อรายงานฉบับใหม่ / นำเข้าไฟล์
+    <!-- New Template Modal -->
+    <div id="newTemplateModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-xl border border-white transform transition-all flex flex-col overflow-hidden">
+            <div class="p-5 flex items-center justify-between border-b border-black/5">
+                <h3 class="font-bold text-apple-darkText flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full bg-apple-blue/10 text-apple-blue flex items-center justify-center"><i class="fa-solid fa-plus text-sm"></i></div>
+                    สร้างหัวข้อรายงานใหม่
                 </h3>
-                <button onclick="closeNewTemplateModal()" class="text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full hover:bg-slate-100 flex items-center justify-center transition-all">
-                    <i class="fa-solid fa-xmark text-sm"></i>
+                <button onclick="closeNewTemplateModal()" class="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 text-slate-500 flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             
-            <!-- Modal Form -->
-            <form onsubmit="handleCreateTemplate(event)" class="p-5 space-y-4">
+            <form onsubmit="handleCreateTemplate(event)" class="p-6 space-y-5">
                 <div>
-                    <label for="newTitleInput" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider mb-1.5">ชื่อหัวข้อรายงาน / หมวดหมู่</label>
-                    <input type="text" id="newTitleInput" required placeholder="เช่น: รายงานส่งมอบงานกะดึก, SLA ประจำวัน" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm">
+                    <label class="block text-xs font-semibold text-slate-500 mb-2 ml-1">ชื่อหัวข้อรายงาน</label>
+                    <input type="text" id="newTitleInput" required placeholder="เช่น: รายงานยอดขาย, ส่งมอบกะ" class="w-full px-4 py-3 rounded-2xl glass-input focus:outline-none focus:ring-2 focus:ring-apple-blue/30 text-sm transition-all">
                 </div>
                 <div>
-                    <div class="flex justify-between items-center mb-1.5">
-                        <label for="newTemplateContent" class="block text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">เนื้อหารายงานต้นฉบับ</label>
-                        <span class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-0.5 rounded">พิมพ์จุดสามจุด ... เพื่อเว้นจุดเติมคำ</span>
+                    <div class="flex justify-between items-center mb-2 ml-1">
+                        <label class="block text-xs font-semibold text-slate-500">เนื้อหาต้นฉบับ</label>
+                        <span class="text-[10px] font-medium text-slate-400">พิมพ์ <code class="bg-black/5 px-1 rounded">...</code> เพื่อเว้นช่องกรอก</span>
                     </div>
-                    <textarea id="newTemplateContent" required rows="7" placeholder="เรียนพี่ๆ ครับ&#10;&#10;>> สรุปงานประจำวันที่ ...&#10;- ยอดขายรวมวันนี้ ... บาท&#10;- จำนวนลูกค้ารวม ... ท่าน" class="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400 text-xs sm:text-sm font-mono leading-relaxed"></textarea>
-                </div>
-                
-                <div class="bg-amber-50/70 rounded-xl p-3.5 text-[11px] text-amber-800 leading-relaxed border border-amber-100">
-                    <i class="fa-solid fa-lightbulb text-amber-500 mr-1 text-sm"></i> <strong>เคล็ดลับง่ายๆ:</strong> ทุกจุดที่คุณต้องการให้ระบบสร้างฟิลด์ให้คุณพิมพ์ค่าแบบสดๆ ให้พิมพ์จุดสามจุด <code>...</code> เว้นว่างไว้ โดยระบบอัจฉริยะจะดึงคำที่อยู่ด้านหน้ามาตั้งเป็นชื่อหัวข้อฟิลด์กรอกให้คุณทันที!
+                    <textarea id="newTemplateContent" required rows="6" placeholder="เรียนหัวหน้า...&#10;&#10;สรุปยอดประจำวันที่ ...&#10;- ยอดรวม: ... บาท" class="w-full px-4 py-3 rounded-2xl glass-input focus:outline-none focus:ring-2 focus:ring-apple-blue/30 text-xs sm:text-sm font-mono leading-relaxed resize-none transition-all"></textarea>
                 </div>
 
-                <!-- Footer buttons -->
-                <div class="pt-4 border-t border-slate-100 flex justify-end gap-2">
-                    <button type="button" onclick="closeNewTemplateModal()" class="px-4 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-xs sm:text-sm font-bold transition-all">ยกเลิก</button>
-                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs sm:text-sm font-extrabold shadow-md shadow-emerald-100 transition-all">บันทึกและเปิดใช้งาน</button>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeNewTemplateModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold transition-all">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-apple-blue hover:bg-blue-600 text-white rounded-full text-sm font-bold shadow-md shadow-blue-500/20 transition-all">บันทึก</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- CUSTOM CONFIRMATION DIALOG MODAL (Complies with NO-alert and NO-confirm rules) -->
-    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-[60] overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex justify-center items-center p-4">
-        <div class="bg-white rounded-2xl shadow-premium w-full max-w-md border border-slate-100 transform transition-all p-6 text-center">
-            <div class="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-4 text-rose-500 text-2xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+    <!-- Confirm Delete Modal -->
+    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-[60] overflow-y-auto bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white transform transition-all p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 text-2xl">
+                <i class="fa-solid fa-trash-can"></i>
             </div>
-            <h3 class="text-base font-extrabold text-slate-900 mb-2">ยืนยันการลบหัวข้อรายงาน?</h3>
-            <p id="deleteConfirmMessage" class="text-xs text-slate-500 mb-6 leading-relaxed">คุณต้องการลบหัวข้อรายงานนี้จริงหรือไม่? ข้อมูลทั้งหมดในหัวข้อนี้จะถูกลบอย่างถาวรและไม่สามารถกู้คืนได้</p>
-            <div class="flex gap-3 justify-center">
-                <button onclick="closeDeleteConfirmModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-xs font-bold transition-all">ยกเลิก</button>
-                <button id="confirmDeleteBtn" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-extrabold shadow-md shadow-rose-200 transition-all">ยืนยันลบถาวร</button>
+            <h3 class="text-base font-bold text-apple-darkText mb-2">ลบหัวข้อรายงาน?</h3>
+            <p id="deleteConfirmMessage" class="text-[13px] text-slate-500 mb-6 leading-relaxed">ข้อมูลทั้งหมดในหัวข้อนี้จะหายไปและไม่สามารถกู้คืนได้</p>
+            <div class="flex flex-col gap-2">
+                <button id="confirmDeleteBtn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-sm font-bold shadow-md transition-all">ลบถาวร</button>
+                <button onclick="closeDeleteConfirmModal()" class="w-full py-3 bg-black/5 hover:bg-black/10 text-slate-600 rounded-2xl text-sm font-bold transition-all">ยกเลิก</button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST ELEMENT: Custom beautiful notifications without using alerts -->
-    <div id="toastNotification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white text-xs sm:text-sm px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 max-w-sm">
-        <div id="toastIconContainer" class="p-1.5 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center">
-            <!-- Filled dynamically -->
-        </div>
-        <div>
-            <p id="toastMessage" class="font-bold text-slate-100"></p>
-        </div>
+    <!-- Toast Notification (iOS Dynamic Island style) -->
+    <div id="toastNotification" class="fixed top-6 left-1/2 -translate-x-1/2 z-[70] transform -translate-y-20 opacity-0 transition-all duration-400 ease-out bg-black/80 backdrop-blur-xl text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 pointer-events-none border border-white/10">
+        <div id="toastIconContainer" class="flex items-center justify-center"></div>
+        <p id="toastMessage" class="font-medium tracking-wide"></p>
     </div>
-
-    <!-- Footnote details -->
-    <footer class="bg-white border-t border-slate-100 py-3 text-center text-[10px] sm:text-xs text-slate-400 font-medium shrink-0">
-        Daily Routine Workspace &bull; ออกแบบเพื่อการทำงานที่กระชับและปราศจากข้อผิดพลาด
-    </footer>
 
     <script>
-        // Default presets converted to easy-typing "..." placeholders instead of brackets
+        // Preset default templates
         const defaultTemplates = [
             {
                 id: "sla-8-min",
@@ -372,368 +363,204 @@
                 subPeriods: [
                     {
                         name: "00:00 - 04:59 น.",
-                        content: `เรียนพี่ๆ ครับ
-
-รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 00:00 - 04:59 น.
-
--> จำนวนอนุมัติทั้งหมด : ... รายการ
--> อนุมัติน้อยกว่า 8 นาที : ... รายการ
--> อนุมัติมากกว่า 8 นาที : ... รายการ
--> ค่าเฉลี่ยทั้งวัน :  ... นาที
----------------
-- TG กะ C เข้างาน ... คน
-
-ขอบคุณครับ`
+                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 00:00 - 04:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- TG กะ C เข้างาน ... คน\n\nขอบคุณครับ`
                     },
                     {
                         name: "05:00 - 13:59 น.",
-                        content: `เรียนพี่ๆ ครับ
-
-รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 05:00 - 13:59 น.
-
--> จำนวนอนุมัติทั้งหมด : ... รายการ
--> อนุมัติน้อยกว่า 8 นาที : ... รายการ
--> อนุมัติมากกว่า 8 นาที : ... รายการ
--> ค่าเฉลี่ยทั้งวัน :  ... นาที
----------------
-- Temp ทีม A เข้างานจริง ... คน
-- Temp ทีม M เข้างานจริง ... คน
-
-ขอบคุณครับ`
+                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 05:00 - 13:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม A เข้างานจริง ... คน\n- Temp ทีม M เข้างานจริง ... คน\n\nขอบคุณครับ`
                     },
                     {
                         name: "14:00 - 22:59 น.",
-                        content: `เรียนพี่ๆ ครับ
-
-รายงานผลการอนุมัติรายการผ่านทาง (SLA) วันที่ ... เวลา 14:00 - 22:59 น.
-
--> จำนวนอนุมัติทั้งหมด : ... รายการ
--> อนุมัติน้อยกว่า 8 นาที : ... รายการ
--> อนุมัติมากกว่า 8 นาที : ... รายการ
--> ค่าเฉลี่ยทั้งวัน :  ... นาที
----------------
-- Temp ทีม M เข้างานจริง ... คน
-- Temp ทีม B เข้างานจริง ... คน
-
-ขอบคุณครับ`
+                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 14:00 - 22:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม M เข้างานจริง ... คน\n- Temp ทีม B เข้างานจริง ... คน\n\nขอบคุณครับ`
                     }
                 ]
             },
             {
                 id: "shift-handover",
-                title: "สรุปผลงานและส่งมอบกะประจำวัน",
-                content: `รายงานส่งมอบงานกะ ... ประจำวันที่ ...
-
-ผู้รับผิดชอบหลัก: ...
-
-สรุปสถานะการทำงานภาพรวม:
-- เคสที่เข้ามาทั้งหมด: ... รายการ
-- ดำเนินการเสร็จสิ้นแล้ว: ... รายการ
-- งานตกค้าง/ส่งต่อรอบถัดไป: ... รายการ
-
-ปัญหาหน้างานสำคัญที่พบ:
-- ...
-
-ขอบคุณครับ`
+                title: "ส่งมอบกะประจำวัน",
+                content: `รายงานส่งมอบงานกะ ... ประจำวันที่ ...\n\nผู้รับผิดชอบ: ...\n\nสรุปงาน:\n- เคสทั้งหมด: ... รายการ\n- เสร็จสิ้น: ... รายการ\n- ตกค้าง: ... รายการ\n\nปัญหาที่พบ:\n- ...\n\nขอบคุณครับ`
             },
             {
                 id: "system-health-check",
-                title: "Health Check ระบบเซิร์ฟเวอร์",
-                content: `บันทึกการตรวจเช็กสภาพระบบ Server & Hardware ประจำรอบเวลา ... น.
-ประจำวันที่ ...
-
-สถานะการทำงาน:
-- CPU Usage เฉลี่ย: ... %
-- Memory Used: ... %
-- Database Connectivity: ...
-- API Gateway latency: ... ms
-
-ผลการวิเคราะห์สภาพระบบ: ...
-บันทึกโดยเจ้าหน้าที่กะ: ...`
+                title: "Health Check ระบบ",
+                content: `บันทึกตรวจเช็กระบบรอบเวลา ... น.\nวันที่ ...\n\nสถานะ:\n- CPU Usage: ... %\n- Memory: ... %\n- Database: ...\n\nผลวิเคราะห์: ...\nบันทึกโดย: ...`
             }
         ];
 
-        // System storage & memory mapping variables
         let templates = [];
         let selectedTemplateId = "";
-        let currentTab = 'form'; // 'form' or 'raw'
-        let inputValuesMap = {}; // Keyed by placeholder sequential index for the active template layout
+        let currentTab = 'form';
+        let inputValuesMap = {}; 
 
-        // Auto Migrator from Bracket style (v2) to Ellipsis style (v3)
+        // Auto Migrator logic
         function migrateLegacyTemplates() {
             const oldData = localStorage.getItem('routine_templates_v2');
             if (oldData && !localStorage.getItem('routine_templates_v3')) {
                 try {
                     const parsed = JSON.parse(oldData);
                     parsed.forEach(t => {
-                        // Replace double brackets with triple dots
-                        if (t.content) {
-                            t.content = t.content.replace(/\{\{[^}]+\}\}/g, '...');
-                        }
+                        if (t.content) t.content = t.content.replace(/\{\{[^}]+\}\}/g, '...');
                         if (t.subPeriods) {
                             t.subPeriods.forEach(p => {
-                                if (p.content) {
-                                    p.content = p.content.replace(/\{\{[^}]+\}\}/g, '...');
-                                }
+                                if (p.content) p.content = p.content.replace(/\{\{[^}]+\}\}/g, '...');
                             });
                         }
                     });
                     localStorage.setItem('routine_templates_v3', JSON.stringify(parsed));
-                } catch(e) {
-                    console.error("Migration error: ", e);
-                }
+                } catch(e) {}
             }
         }
 
         window.onload = function() {
-            // First migrate old browser storage if any
             migrateLegacyTemplates();
-
-            // Load templates from modern storage
             const stored = localStorage.getItem('routine_templates_v3');
             if (stored) {
-                try {
-                    templates = JSON.parse(stored);
-                } catch(e) {
-                    templates = defaultTemplates;
-                }
+                try { templates = JSON.parse(stored); } catch(e) { templates = defaultTemplates; }
             } else {
                 templates = defaultTemplates;
                 localStorage.setItem('routine_templates_v3', JSON.stringify(defaultTemplates));
             }
 
             selectedTemplateId = localStorage.getItem('routine_selected_template_id_v3') || templates[0]?.id || "";
-
-            // Sync clocks
             updateClock();
             setInterval(updateClock, 1000);
-
-            // Apply stored sidebar state
             applyStoredSidebarState();
-
-            // Initial view drawing
             renderTopicsList();
             loadTemplate(selectedTemplateId);
         };
 
-        // Realtime Clock Display
         function updateClock() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
-            const dateStr = now.toLocaleDateString('th-TH', { day: 'numeric', month: '2-digit', year: 'numeric' });
-            const clockText = `${dateStr} ${timeStr}`;
-            document.getElementById('currentTimeDisplay').innerText = clockText;
+            document.getElementById('currentTimeDisplay').innerText = 
+                now.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' }) + ' ' +
+                now.toLocaleTimeString('th-TH', { hour12: false });
         }
 
-        // Sidebar Hide / Show Mechanism
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebarBox');
             const icon = document.getElementById('sidebarToggleIcon');
             const btn = document.getElementById('sidebarToggleBtn');
-            
             const isCurrentlyHidden = sidebar.classList.contains('lg:w-0');
             
             if (isCurrentlyHidden) {
-                // Expand Sidebar
-                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
-                sidebar.classList.add('w-full', 'lg:w-[320px]');
-                icon.className = "fa-solid fa-indent text-sm text-slate-600";
-                btn.classList.remove('bg-amber-100', 'hover:bg-amber-200');
-                btn.classList.add('bg-slate-100', 'hover:bg-slate-200');
-                btn.title = "ซ่อนแถบรายการหัวข้อ";
+                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-none', 'hidden');
+                sidebar.classList.add('w-full', 'lg:w-[280px]', 'xl:w-[320px]');
+                if (icon) icon.className = "fa-solid fa-sidebar text-xs";
+                if (btn) btn.classList.replace('bg-white', 'bg-white/50');
+                if (btn) btn.title = "ซ่อนแถบรายการ";
                 localStorage.setItem('sidebar_hidden_state', 'false');
-                showToast('copy', 'แสดงแถบรายการแล้ว');
             } else {
-                // Collapse Sidebar
-                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
-                sidebar.classList.remove('w-full', 'lg:w-[320px]');
-                icon.className = "fa-solid fa-outdent text-sm text-amber-700";
-                btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
-                btn.classList.add('bg-amber-100', 'hover:bg-amber-200');
-                btn.title = "แสดงแถบรายการหัวข้อ";
+                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-none', 'hidden');
+                sidebar.classList.remove('w-full', 'lg:w-[280px]', 'xl:w-[320px]');
+                if (icon) icon.className = "fa-solid fa-list-ul text-xs";
+                if (btn) btn.classList.replace('bg-white/50', 'bg-white');
+                if (btn) btn.title = "แสดงแถบรายการ";
                 localStorage.setItem('sidebar_hidden_state', 'true');
-                showToast('delete', 'ซ่อนแถบรายการเรียบร้อย');
             }
         }
 
         function applyStoredSidebarState() {
-            const sidebar = document.getElementById('sidebarBox');
-            const icon = document.getElementById('sidebarToggleIcon');
-            const btn = document.getElementById('sidebarToggleBtn');
             const isHiddenState = localStorage.getItem('sidebar_hidden_state') === 'true';
-
-            if (isHiddenState) {
-                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
-                sidebar.classList.remove('w-full', 'lg:w-[320px]');
-                icon.className = "fa-solid fa-outdent text-sm text-amber-700";
-                btn.classList.remove('bg-slate-100', 'hover:bg-slate-200');
-                btn.classList.add('bg-amber-100', 'hover:bg-amber-200');
-                btn.title = "แสดงแถบรายการหัวข้อ";
-            } else {
-                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-t-0', 'hidden');
-                sidebar.classList.add('w-full', 'lg:w-[320px]');
-                icon.className = "fa-solid fa-indent text-sm text-slate-600";
-                btn.classList.remove('bg-amber-100', 'hover:bg-amber-200');
-                btn.classList.add('bg-slate-100', 'hover:bg-slate-200');
-                btn.title = "ซ่อนแถบรายการหัวข้อ";
-            }
+            if (isHiddenState) toggleSidebar(); 
         }
 
-        // Smart Parser to find and label ellipsis placeholders positional metadata
+        // Smart Parser
         function getTemplateMatches(content) {
             const matches = [];
             if (!content) return matches;
-
-            // Regex matches either 3 or more dots like ... or the Unicode ellipsis character …
             const regex = /(\.{3,}|…)/g;
-            let match;
-            let index = 0;
-            let lastMatchEndIndex = 0; // เพิ่มตัวแปรบันทึกตำแหน่งสิ้นสุดของจุด ... ล่าสุด
+            let match, index = 0, lastMatchEndIndex = 0; 
             
             while ((match = regex.exec(content)) !== null) {
                 const matchIndex = match.index;
                 const matchLength = match[0].length;
-                
-                // Track start of current line to find context
                 let startOfLine = content.lastIndexOf('\n', matchIndex);
-                if (startOfLine === -1) startOfLine = 0;
-                else startOfLine += 1;
-                
-                // ดึงข้อความเฉพาะระหว่างจุด ... ก่อนหน้า (หรือต้นบรรทัด) มาถึงจุด ... ปัจจุบัน ป้องกันบริบททับซ้อน
+                startOfLine = startOfLine === -1 ? 0 : startOfLine + 1;
                 let startSearchIndex = Math.max(startOfLine, lastMatchEndIndex);
                 let immediatePrefixRaw = content.substring(startSearchIndex, matchIndex);
-                
-                // Standardize prefix cleanings (remove bullet-points, dashes, custom spacers)
                 let textBefore = immediatePrefixRaw.replace(/^[\s\-\*\>•\+\:\u200B\,]+/g, '').trim().replace(/[\s\:\-\=\>\,]+$/g, '');
-                
-                // Track end of current line
                 let endOfLine = content.indexOf('\n', matchIndex);
-                if (endOfLine === -1) endOfLine = content.length;
-                
-                // Get line text following the ellipsis
+                endOfLine = endOfLine === -1 ? content.length : endOfLine;
                 let textAfterOnLine = content.substring(matchIndex + matchLength, endOfLine);
-                // Extract the immediate word/label ending segment
                 let textAfter = textAfterOnLine.trim().split(/[\s\.\,]/)[0].trim();
                 
-                // Fallback smart naming
-                let label = "";
-                if (textBefore) {
-                    label = textBefore;
-                    if (textAfter && textAfter.length < 15) {
-                        label += ` (${textAfter})`;
-                    }
-                } else if (textAfter) {
-                    label = `ส่วนหน้า ${textAfter}`;
-                } else {
-                    label = `ช่องกรอกที่ ${index + 1}`;
-                }
+                let label = textBefore ? (textAfter && textAfter.length < 15 ? `${textBefore} (${textAfter})` : textBefore) : (textAfter ? `ส่วนหน้า ${textAfter}` : `ช่องที่ ${index + 1}`);
                 
-                matches.push({
-                    id: index,
-                    startIndex: matchIndex,
-                    length: matchLength,
-                    label: label
-                });
-                
-                lastMatchEndIndex = matchIndex + matchLength; // อัปเดตตำแหน่งสิ้นสุดเพื่อใช้ในลูปถัดไป
+                matches.push({ id: index, startIndex: matchIndex, length: matchLength, label: label });
+                lastMatchEndIndex = matchIndex + matchLength;
                 index++;
             }
             return matches;
         }
 
-        // Draw Sidebar selection list
         function renderTopicsList() {
             const listContainer = document.getElementById('topicsList');
             listContainer.innerHTML = '';
-
-            document.getElementById('totalTemplatesCount').innerText = `${templates.length} หัวข้อ`;
+            document.getElementById('totalTemplatesCount').innerText = templates.length;
 
             templates.forEach(t => {
                 const isActive = t.id === selectedTemplateId;
-                
-                let contentString = t.content || '';
-                if (t.subPeriods) {
-                    const subIdx = t.activeSubPeriodIndex || 0;
-                    contentString = t.subPeriods[subIdx]?.content || '';
-                }
-
-                // Parse variables count
-                const matches = getTemplateMatches(contentString);
-                const varCount = matches.length;
-
-                let itemClass = `w-full flex items-center justify-between p-3 rounded-xl text-left text-xs sm:text-sm font-medium transition-all group duration-150 cursor-pointer border-l-4 `;
-                
-                if (isActive) {
-                    itemClass += 'bg-amber-50/80 text-amber-900 border-amber-500 shadow-sm font-semibold';
-                } else {
-                    itemClass += 'text-slate-600 border-transparent hover:bg-slate-50 hover:text-slate-900';
-                }
+                let contentString = t.subPeriods ? (t.subPeriods[t.activeSubPeriodIndex || 0]?.content || '') : (t.content || '');
+                const varCount = getTemplateMatches(contentString).length;
 
                 const item = document.createElement('button');
+                
+                // Styling active vs inactive with Glassmorphism
+                let itemClass = `w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all duration-200 cursor-pointer border `;
+                if (isActive) {
+                    itemClass += 'bg-white shadow-[0_4px_15px_rgba(0,0,0,0.05)] border-white text-apple-blue font-bold transform scale-[1.01]';
+                } else {
+                    itemClass += 'border-transparent text-slate-600 hover:bg-white/50 hover:border-white/50 font-medium';
+                }
+
                 item.className = itemClass;
                 item.onclick = () => loadTemplate(t.id);
                 
                 item.innerHTML = `
-                    <div class="flex items-center gap-2.5 overflow-hidden mr-1">
-                        <div class="p-1 rounded bg-white shadow-sm border border-slate-100 flex items-center justify-center">
-                            <i class="fa-solid fa-file-alt ${isActive ? 'text-amber-500' : 'text-slate-400 group-hover:text-amber-500'}"></i>
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <div class="w-8 h-8 rounded-xl ${isActive ? 'bg-blue-50 text-apple-blue' : 'bg-black/5 text-slate-400'} flex items-center justify-center shrink-0 transition-colors">
+                            <i class="fa-solid fa-file-lines text-xs"></i>
                         </div>
-                        <span class="truncate block font-semibold text-xs sm:text-sm">${t.title}</span>
+                        <span class="truncate block text-xs sm:text-sm">${t.title}</span>
                     </div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">${varCount} ช่องกรอก</span>
-                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                    <div class="flex items-center gap-2 pl-2">
+                        <span class="text-[9px] ${isActive ? 'bg-blue-100 text-blue-700' : 'bg-black/5 text-slate-400'} px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap">${varCount} ช่อง</span>
                     </div>
                 `;
                 listContainer.appendChild(item);
             });
         }
 
-        // Search filter logic
         function filterTemplates() {
             const query = document.getElementById('searchBar').value.toLowerCase();
             const buttons = document.getElementById('topicsList').getElementsByTagName('button');
-            
             templates.forEach((t, index) => {
-                const text = t.title.toLowerCase();
                 const btn = buttons[index];
-                if (btn) {
-                    if (text.includes(query)) {
-                        btn.classList.remove('hidden');
-                        btn.classList.add('flex');
-                    } else {
-                        btn.classList.remove('flex');
-                        btn.classList.add('hidden');
-                    }
-                }
+                if (btn) btn.style.display = t.title.toLowerCase().includes(query) ? 'flex' : 'none';
             });
         }
 
-        // Loads selected template inside inputs & raw editors
         function loadTemplate(id) {
             const selected = templates.find(t => t.id === id);
             if (!selected) return;
 
+            // BUG FIX RETAINED: Reset input values when changing topics to avoid bleeding variables
+            if (selectedTemplateId !== id) {
+                inputValuesMap = {};
+            }
+
             selectedTemplateId = id;
             localStorage.setItem('routine_selected_template_id_v3', id);
-            
-            // Re-render sidebar active indicators
             renderTopicsList();
-
             document.getElementById('activeTemplateTitle').innerText = selected.title;
 
-            // Handle sub-periods if they exist
             const subPeriodSelector = document.getElementById('subPeriodSelectorContainer');
             const rawSubPeriodWarning = document.getElementById('rawSubPeriodWarning');
             let contentToLoad = '';
 
             if (selected.subPeriods && selected.subPeriods.length > 0) {
-                if (selected.activeSubPeriodIndex === undefined) {
-                    selected.activeSubPeriodIndex = 0;
-                }
-                const activeIndex = selected.activeSubPeriodIndex;
-                contentToLoad = selected.subPeriods[activeIndex].content;
-
+                if (selected.activeSubPeriodIndex === undefined) selected.activeSubPeriodIndex = 0;
+                contentToLoad = selected.subPeriods[selected.activeSubPeriodIndex].content;
                 subPeriodSelector.classList.remove('hidden');
                 rawSubPeriodWarning.classList.remove('hidden');
                 renderSubPeriodTabs(selected);
@@ -744,250 +571,165 @@
             }
 
             document.getElementById('rawTextarea').value = contentToLoad;
-
-            // Render inputs
             parseTemplateVariables(contentToLoad);
 
-            // Hide/Show delete button in the main header
             const headerDeleteBtn = document.getElementById('headerDeleteBtn');
-            if (templates.length <= 1) {
-                headerDeleteBtn.classList.add('hidden');
-            } else {
-                headerDeleteBtn.classList.remove('hidden');
-            }
+            headerDeleteBtn.classList.toggle('hidden', templates.length <= 1);
         }
 
-        // Render sub-period tabs dynamically
         function renderSubPeriodTabs(template) {
             const container = document.getElementById('subPeriodTabList');
             container.innerHTML = '';
-
             template.subPeriods.forEach((period, index) => {
                 const isActive = template.activeSubPeriodIndex === index;
                 const tabBtn = document.createElement('button');
                 tabBtn.type = 'button';
                 
-                tabBtn.className = `flex-1 min-w-0 flex items-center justify-center gap-1 px-1 py-1.5 rounded-lg text-[9px] sm:text-[10px] md:text-xs font-bold transition-all ${
-                    isActive 
-                    ? 'bg-amber-500 text-white shadow-sm border border-amber-500' 
-                    : 'bg-white text-slate-600 hover:bg-amber-50 border border-slate-200 hover:border-amber-300'
+                // Segmented control style tabs
+                tabBtn.className = `flex-1 min-w-0 px-2 py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all ${
+                    isActive ? 'bg-white text-apple-darkText shadow-sm' : 'text-slate-500 hover:text-slate-800'
                 }`;
-
-                tabBtn.innerHTML = `
-                    <i class="${isActive ? 'fa-solid fa-circle-dot shrink-0' : 'fa-regular fa-circle shrink-0'}"></i>
-                    <span class="truncate">${period.name}</span>
-                `;
-
+                tabBtn.innerText = period.name;
                 tabBtn.onclick = () => selectSubPeriod(index);
                 container.appendChild(tabBtn);
             });
         }
 
-        // Select specific sub-period and reload
         function selectSubPeriod(index) {
             const selected = templates.find(t => t.id === selectedTemplateId);
             if (!selected || !selected.subPeriods) return;
 
-            selected.activeSubPeriodIndex = index;
-            // Persist
-            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
+            // BUG FIX RETAINED: Reset input values when changing sub-periods
+            if (selected.activeSubPeriodIndex !== index) {
+                inputValuesMap = {};
+            }
 
-            // Reload template with new content
+            selected.activeSubPeriodIndex = index;
+            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
             loadTemplate(selectedTemplateId);
-            showToast('save', `สลับเป็นช่วงเวลา ${selected.subPeriods[index].name}`);
         }
 
-        // Quick auto filling chip actions
+        // Dynamic Helpers
         function fillTodayDate(idx) {
             const today = new Date();
-            const d = String(today.getDate()).padStart(2, '0');
-            const m = String(today.getMonth() + 1).padStart(2, '0');
-            const y = today.getFullYear() + 543; // Thai year
-            const val = `${d}/${m}/${y}`;
-            
-            setValue(idx, val);
-            showToast('save', 'บันทึกวันที่ไทยเรียบร้อย');
+            setValue(idx, `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear() + 543}`);
         }
-
         function fillGregorianDate(idx) {
             const today = new Date();
-            const d = String(today.getDate()).padStart(2, '0');
-            const m = String(today.getMonth() + 1).padStart(2, '0');
-            const y = today.getFullYear(); // AD / Gregorian year
-            const val = `${d}/${m}/${y}`;
-            
-            setValue(idx, val);
-            showToast('save', 'บันทึกวันที่ ค.ศ. เรียบร้อย');
+            setValue(idx, `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`);
         }
-
         function fillCurrentTime(idx) {
             const today = new Date();
-            const hrs = String(today.getHours()).padStart(2, '0');
-            const mins = String(today.getMinutes()).padStart(2, '0');
-            const val = `${hrs}:${mins}`;
-            
-            setValue(idx, val);
-            showToast('save', 'บันทึกเวลาปัจจุบันเรียบร้อย');
+            setValue(idx, `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`);
         }
-
         function setValue(idx, val) {
             const targetInput = document.querySelector(`[data-index="${idx}"]`);
-            if (targetInput) {
-                targetInput.value = val;
-                updateValueMap(idx, val);
-            }
+            if (targetInput) { targetInput.value = val; updateValueMap(idx, val); }
         }
 
-        // Analyze and render input form fields based on ellipsis matches
         function parseTemplateVariables(content) {
             const container = document.getElementById('formFieldsContainer');
             container.innerHTML = '';
-            
             const matches = getTemplateMatches(content);
 
             if (matches.length === 0) {
                 container.innerHTML = `
-                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 text-emerald-800 text-xs flex flex-col gap-1 shadow-inner">
-                        <p class="font-extrabold flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> ไม่จำเป็นต้องระบุช่องกรอกเพิ่มเติม!</p>
-                        <p class="text-[11px] text-emerald-600 leading-relaxed">เทมเพลตนี้พร้อมคัดลอกได้ทันที คุณสามารถพิมพ์แก้ไขดัดแปลงเพิ่มเติมผ่านแท็บแก้ไขเทมเพลตได้</p>
+                    <div class="p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col gap-1 items-center text-center">
+                        <div class="w-10 h-10 rounded-full bg-apple-green/10 text-apple-green flex items-center justify-center mb-2"><i class="fa-solid fa-check"></i></div>
+                        <p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน</p>
+                        <p class="text-[11px] text-slate-500">เทมเพลตนี้ไม่มีจุดที่ต้องกรอก คัดลอกได้ทันที</p>
                     </div>
                 `;
                 updateFinalOutput(content, escapeHTMLForDisplay(content));
                 return;
             }
 
-            // Create stacked inputs for matches
             matches.forEach((m, idx) => {
                 const formGroup = document.createElement('div');
+                const currentValue = (inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '').trim();
                 
-                // Values mapped positionally
-                const currentValue = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
-                
-                const emptyClass = 'p-2 rounded-lg border transition-all space-y-1 border-rose-300 bg-rose-50/40 shadow-sm min-w-0';
-                const filledClass = 'p-2 rounded-lg border transition-all space-y-1 border-slate-200/60 bg-white shadow-sm min-w-0';
+                // Glass Card classes
+                const baseClass = 'p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 min-w-0 ';
+                const emptyClass = baseClass + 'border-red-300 bg-red-50/75';
+                const filledClass = baseClass + 'border-white/80 bg-white/80 shadow-md';
 
-                formGroup.className = currentValue === '' ? emptyClass : filledClass;
                 formGroup.id = `fieldCard-${idx}`;
+                formGroup.className = currentValue === '' ? emptyClass : filledClass;
+                if (inputValuesMap[idx] === undefined) inputValuesMap[idx] = '';
 
-                let inputPlaceholder = `กรอกข้อมูลส่วนนี้`;
-                
-                if (inputValuesMap[idx] === undefined) {
-                    inputValuesMap[idx] = '';
-                }
-
-                // Context analysis for customized helper badges
-                // แก้ไขโดยปรับจากคำว่า 'วัน' เป็น 'วันที่' เพื่อให้รัดกุมมากขึ้น
+                // Chips helper
                 const isDateVar = m.label.toLowerCase().includes('วันที่') || m.label.toLowerCase().includes('date');
                 const isTimeVar = m.label.toLowerCase().includes('เวลา') || m.label.toLowerCase().includes('time');
                 const isMflowClass = m.label.toLowerCase().includes('คลาสรถ') || m.label.toLowerCase().includes('m-flow') || m.label.toLowerCase().includes('m flow');
 
+                const btnClass = 'text-[9px] font-bold bg-white hover:bg-slate-50 text-slate-600 px-2 py-1 rounded-full shadow-sm border border-black/5 transition-all';
                 let helpersMarkup = '';
+                
                 if (isDateVar) {
-                    helpersMarkup = `
-                        <div class="flex gap-1 shrink-0">
-                            <button type="button" onclick="fillTodayDate(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all">วันไทย</button>
-                            <button type="button" onclick="fillGregorianDate(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all">ค.ศ.</button>
-                        </div>
-                    `;
+                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="fillTodayDate(${idx})" class="${btnClass}">วันไทย</button><button type="button" onclick="fillGregorianDate(${idx})" class="${btnClass}">ค.ศ.</button></div>`;
                 } else if (isTimeVar) {
-                    helpersMarkup = `
-                        <div class="flex gap-1 shrink-0">
-                            <button type="button" onclick="fillCurrentTime(${idx})" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 px-1.5 py-0.5 rounded transition-all flex items-center gap-1"><i class="fa-regular fa-clock"></i>ตอนนี้</button>
-                        </div>
-                    `;
+                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="fillCurrentTime(${idx})" class="${btnClass}">ตอนนี้</button></div>`;
                 } else if (isMflowClass) {
-                    helpersMarkup = `
-                        <div class="flex gap-1 shrink-0">
-                            <button type="button" onclick="setValue(${idx}, '4 ล้อ (C1)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">4 ล้อ (C1)</button>
-                            <button type="button" onclick="setValue(${idx}, '6 ล้อ (C2)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">6 ล้อ (C2)</button>
-                            <button type="button" onclick="setValue(${idx}, 'มากกว่า 6 ล้อ (C3)')" class="text-[9px] font-bold border border-slate-200 bg-white hover:bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded transition-all">> 6 ล้อ (C3)</button>
-                        </div>
-                    `;
+                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="setValue(${idx}, '4 ล้อ (C1)')" class="${btnClass}">C1</button><button type="button" onclick="setValue(${idx}, '6 ล้อ (C2)')" class="${btnClass}">C2</button><button type="button" onclick="setValue(${idx}, 'มากกว่า 6 ล้อ (C3)')" class="${btnClass}">C3</button></div>`;
                 }
 
                 formGroup.innerHTML = `
-                    <div class="flex justify-between items-center gap-2">
-                        <label class="text-[10px] font-extrabold text-slate-600 tracking-wide flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                            <span>${m.label}</span>
+                    <div class="flex justify-between items-center gap-2 px-1">
+                        <label class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full ${currentValue === '' ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.7)]' : 'bg-apple-green shadow-[0_0_5px_rgba(52,199,89,0.7)]'}"></span>
+                            ${m.label}
                         </label>
                         ${helpersMarkup}
                     </div>
-                    <input type="text" 
-                           data-index="${idx}"
-                           value="${inputValuesMap[idx]}"
-                           oninput="updateValueMap(${idx}, this.value)"
-                           placeholder="${inputPlaceholder}"
-                           class="w-full px-2 py-1 bg-white border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-rose-400 focus:border-transparent transition-all shadow-sm text-xs">
+                    <input type="text" data-index="${idx}" value="${inputValuesMap[idx]}" oninput="updateValueMap(${idx}, this.value)" placeholder="กรอกข้อมูล..." class="w-full px-3 py-2 bg-white/95 border border-slate-300 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-apple-blue/50 focus:border-apple-blue transition-all shadow-inner text-xs sm:text-sm text-slate-900 font-medium placeholder:text-slate-400">
                 `;
                 container.appendChild(formGroup);
             });
-
             computeOutput();
         }
 
         function updateValueMap(idx, value) {
             inputValuesMap[idx] = value;
-            
             const card = document.getElementById(`fieldCard-${idx}`);
             if (card) {
-                if (value.trim() === '') {
-                    card.className = 'p-2 rounded-lg border transition-all space-y-1 border-rose-300 bg-rose-50/40 shadow-sm min-w-0';
-                } else {
-                    card.className = 'p-2 rounded-lg border transition-all space-y-1 border-slate-200/60 bg-white shadow-sm min-w-0';
+                const baseClass = 'p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 min-w-0 ';
+                card.className = value.trim() === '' ? baseClass + 'border-red-300 bg-red-50/75' : baseClass + 'border-white/80 bg-white/80 shadow-md';
+                
+                // Update indicator dot
+                const dot = card.querySelector('label span');
+                if (dot) {
+                    dot.className = `w-2 h-2 rounded-full ${value.trim() === '' ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.7)]' : 'bg-apple-green shadow-[0_0_5px_rgba(52,199,89,0.7)]'}`;
                 }
             }
             computeOutput();
         }
 
-        function escapeHTMLForDisplay(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
+        function escapeHTMLForDisplay(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-        // Rebuilds live output using precise sequential match substitutions
         function computeOutput() {
             const selected = templates.find(t => t.id === selectedTemplateId);
             if (!selected) return;
 
-            let originalContent = '';
-            if (selected.subPeriods && selected.subPeriods.length > 0) {
-                const subIdx = selected.activeSubPeriodIndex || 0;
-                originalContent = selected.subPeriods[subIdx].content;
-            } else {
-                originalContent = selected.content;
-            }
-
+            let originalContent = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
             const matches = getTemplateMatches(originalContent);
 
-            // A: Generate Plain-Text output version for standard copy operations
-            let finalOutputText = "";
-            let lastIndex = 0;
-            
+            let finalOutputText = "", lastIndex = 0;
             matches.forEach((m, idx) => {
                 finalOutputText += originalContent.substring(lastIndex, m.startIndex);
-                const userVal = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
-                const replacementText = userVal !== '' ? userVal : `[ยังไม่ได้ระบุ: ${m.label}]`;
-                finalOutputText += replacementText;
+                finalOutputText += (inputValuesMap[idx] !== undefined && inputValuesMap[idx] !== '') ? inputValuesMap[idx] : `[รอระบุ: ${m.label}]`;
                 lastIndex = m.startIndex + m.length;
             });
             finalOutputText += originalContent.substring(lastIndex);
 
-            // B: Generate Beautiful HTML visual version with highlighted warning badges
-            let finalOutputHTML = "";
-            let lastIndexHTML = 0;
-            
+            let finalOutputHTML = "", lastIndexHTML = 0;
             matches.forEach((m, idx) => {
                 finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML, m.startIndex));
-                const userVal = inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '';
-                
-                let htmlReplacement = '';
+                const userVal = inputValuesMap[idx] || '';
                 if (userVal !== '') {
-                    htmlReplacement = `<span class="text-slate-900 font-semibold bg-emerald-50 px-1 rounded border border-emerald-100">${escapeHTMLForDisplay(userVal)}</span>`;
+                    finalOutputHTML += `<span class="text-apple-blue font-bold bg-blue-50 px-1 rounded-md border border-blue-100">${escapeHTMLForDisplay(userVal)}</span>`;
                 } else {
-                    htmlReplacement = `<span class="bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.5 rounded border border-rose-300 inline-flex items-center gap-1 animate-pulse text-[11px]"><i class="fa-solid fa-triangle-exclamation text-rose-500 animate-bounce"></i>ยังไม่ได้ระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
+                    finalOutputHTML += `<span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-md border border-red-200 inline-flex items-center gap-1 text-[11px] animate-pulse"><i class="fa-solid fa-asterisk text-[9px]"></i>รอระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
                 }
-                
-                finalOutputHTML += htmlReplacement;
                 lastIndexHTML = m.startIndex + m.length;
             });
             finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML));
@@ -995,7 +737,6 @@
             updateFinalOutput(finalOutputText, finalOutputHTML);
         }
 
-        // Draw output states
         function updateFinalOutput(plainText, htmlText) {
             document.getElementById('outputDisplay').value = plainText;
             document.getElementById('outputDisplayHTML').innerHTML = htmlText;
@@ -1005,80 +746,60 @@
             inputValuesMap = {};
             const selected = templates.find(t => t.id === selectedTemplateId);
             if (selected) {
-                let currentContent = selected.content || '';
-                if (selected.subPeriods) {
-                    const subIdx = selected.activeSubPeriodIndex || 0;
-                    currentContent = selected.subPeriods[subIdx].content;
-                }
-                parseTemplateVariables(currentContent);
+                let content = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
+                parseTemplateVariables(content);
             }
-            showToast('delete', 'รีเซ็ตข้อมูลล้างฟอร์มเรียบร้อยแล้ว');
         }
 
+        // Segmented Control Tabs toggle logic
         function switchTab(tab) {
             currentTab = tab;
             const formBtn = document.getElementById('tabFormBtn');
             const rawBtn = document.getElementById('tabRawBtn');
-            const formPane = document.getElementById('dynamicFormPane');
-            const rawPane = document.getElementById('rawEditPane');
+            
+            const activeStyle = 'px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5';
+            const inactiveStyle = 'px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 hover:text-apple-darkText transition-all flex items-center gap-1.5';
 
             if (tab === 'form') {
-                formBtn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5';
-                rawBtn.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5';
-                
-                formPane.classList.remove('hidden');
-                rawPane.classList.add('hidden');
+                formBtn.className = activeStyle;
+                rawBtn.className = inactiveStyle;
+                document.getElementById('dynamicFormPane').classList.remove('hidden');
+                document.getElementById('rawEditPane').classList.add('hidden');
                 
                 const selected = templates.find(t => t.id === selectedTemplateId);
                 if (selected) {
-                    let currentContent = selected.content || '';
-                    if (selected.subPeriods) {
-                        const subIdx = selected.activeSubPeriodIndex || 0;
-                        currentContent = selected.subPeriods[subIdx].content;
-                    }
-                    parseTemplateVariables(currentContent);
+                    let content = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
+                    parseTemplateVariables(content);
                 }
             } else {
-                rawBtn.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg bg-white text-slate-800 shadow-sm transition-all flex items-center gap-1.5';
-                formBtn.className = 'px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-600 hover:text-slate-900 transition-all flex items-center gap-1.5';
-                
-                rawPane.classList.remove('hidden');
-                formPane.classList.add('hidden');
+                rawBtn.className = activeStyle;
+                formBtn.className = inactiveStyle;
+                document.getElementById('rawEditPane').classList.remove('hidden');
+                document.getElementById('dynamicFormPane').classList.add('hidden');
             }
         }
 
-        // Live text editor change logic
         function onRawTemplateChange() {
             const currentRawText = document.getElementById('rawTextarea').value;
             const matches = getTemplateMatches(currentRawText);
 
-            // Plain-Text output rebuild
-            let finalOutputText = "";
-            let lastIndex = 0;
+            let finalOutputText = "", lastIndex = 0;
             matches.forEach((m, idx) => {
                 finalOutputText += currentRawText.substring(lastIndex, m.startIndex);
-                const userVal = inputValuesMap[idx] || '';
-                const replacementText = userVal !== '' ? userVal : `[ยังไม่ได้ระบุ: ${m.label}]`;
-                finalOutputText += replacementText;
+                finalOutputText += (inputValuesMap[idx] || '') !== '' ? inputValuesMap[idx] : `[รอระบุ: ${m.label}]`;
                 lastIndex = m.startIndex + m.length;
             });
             finalOutputText += currentRawText.substring(lastIndex);
             
-            // HTML visual display output rebuild
-            let finalOutputHTML = "";
-            let lastIndexHTML = 0;
+            let finalOutputHTML = "", lastIndexHTML = 0;
             matches.forEach((m, idx) => {
                 finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML, m.startIndex));
                 const userVal = inputValuesMap[idx] || '';
-                
-                let htmlReplacement = '';
                 if (userVal !== '') {
-                    htmlReplacement = `<span class="text-slate-900 font-semibold bg-emerald-50 px-1 rounded border border-emerald-100">${escapeHTMLForDisplay(userVal)}</span>`;
+                    finalOutputHTML += `<span class="text-apple-blue font-bold bg-blue-50 px-1 rounded-md border border-blue-100">${escapeHTMLForDisplay(userVal)}</span>`;
                 } else {
-                    htmlReplacement = `<span class="bg-rose-100 text-rose-700 font-extrabold px-1.5 py-0.5 rounded border border-rose-300 inline-flex items-center gap-1 animate-pulse text-[11px]"><i class="fa-solid fa-triangle-exclamation text-rose-500"></i>ยังไม่ได้ระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
+                    finalOutputHTML += `<span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-md border border-red-200 inline-flex items-center gap-1 text-[11px]"><i class="fa-solid fa-asterisk text-[9px]"></i>รอระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
                 }
-                
-                finalOutputHTML += htmlReplacement;
                 lastIndexHTML = m.startIndex + m.length;
             });
             finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML));
@@ -1088,187 +809,96 @@
 
         function saveTemplateChanges() {
             const currentRawText = document.getElementById('rawTextarea').value.trim();
-            if (!currentRawText) {
-                showToast('error', 'ข้อความเทมเพลตต้องห้ามว่างเปล่า');
-                return;
-            }
+            if (!currentRawText) { showToast('error', 'ข้อความเทมเพลตว่างเปล่า'); return; }
 
             const index = templates.findIndex(t => t.id === selectedTemplateId);
             if (index !== -1) {
-                const template = templates[index];
-                
-                if (template.subPeriods && template.subPeriods.length > 0) {
-                    const subIdx = template.activeSubPeriodIndex || 0;
-                    template.subPeriods[subIdx].content = currentRawText;
-                } else {
-                    template.content = currentRawText;
-                }
+                if (templates[index].subPeriods) templates[index].subPeriods[templates[index].activeSubPeriodIndex || 0].content = currentRawText;
+                else templates[index].content = currentRawText;
 
                 localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-                showToast('save', 'อัปเดตโครงร่างต้นฉบับสำเร็จ!');
-                
-                // Keep values where indexes match, or clear map cleanly
+                showToast('save', 'บันทึกโครงร่างสำเร็จ');
                 parseTemplateVariables(currentRawText);
                 switchTab('form');
             }
         }
 
-        function openNewTemplateModal() {
-            document.getElementById('newTemplateModal').classList.remove('hidden');
-            document.getElementById('newTitleInput').focus();
-        }
-
-        function closeNewTemplateModal() {
-            document.getElementById('newTemplateModal').classList.add('hidden');
-            document.getElementById('newTitleInput').value = '';
-            document.getElementById('newTemplateContent').value = '';
-        }
+        function openNewTemplateModal() { document.getElementById('newTemplateModal').classList.remove('hidden'); document.getElementById('newTitleInput').focus(); }
+        function closeNewTemplateModal() { document.getElementById('newTemplateModal').classList.add('hidden'); document.getElementById('newTitleInput').value = ''; document.getElementById('newTemplateContent').value = ''; }
 
         function handleCreateTemplate(event) {
             event.preventDefault();
             const title = document.getElementById('newTitleInput').value.trim();
             const content = document.getElementById('newTemplateContent').value.trim();
-
             if (!title || !content) return;
 
             const id = 'custom-' + Date.now();
-            const newTemplate = { id, title, content };
-
-            templates.push(newTemplate);
+            templates.push({ id, title, content });
             localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
 
             closeNewTemplateModal();
             selectedTemplateId = id;
             localStorage.setItem('routine_selected_template_id_v3', id);
             
-            inputValuesMap = {}; // รีเซ็ตค่าหลังจากสร้างใหม่เพื่อให้เริ่มสดใส
-            renderTopicsList();
-            loadTemplate(id);
-            switchTab('form');
-            showToast('save', `เพิ่มหัวข้อรายงาน "${title}" เรียบร้อยแล้ว`);
+            inputValuesMap = {}; 
+            renderTopicsList(); loadTemplate(id); switchTab('form');
+            showToast('save', 'สร้างหัวข้อสำเร็จ');
         }
 
-        // Custom Confirmation dialog controller
         function deleteCurrentTemplate() {
-            if (templates.length <= 1) {
-                showToast('error', 'ไม่สามารถลบหัวข้อรายงานสุดท้ายได้');
-                return;
-            }
-
-            const current = templates.find(t => t.id === selectedTemplateId);
-            const title = current ? current.title : 'หัวข้อ';
-            
-            document.getElementById('deleteConfirmMessage').innerHTML = `คุณต้องการลบหัวข้อรายงาน <strong class="text-rose-600">"${title}"</strong> จริงหรือไม่? ข้อมูลทั้งหมดในหัวข้อนี้จะถูกลบอย่างถาวรและไม่สามารถกู้คืนได้`;
+            if (templates.length <= 1) { showToast('error', 'ไม่สามารถลบหัวข้อสุดท้ายได้'); return; }
             document.getElementById('deleteConfirmModal').classList.remove('hidden');
-            
             document.getElementById('confirmDeleteBtn').onclick = function() {
                 templates = templates.filter(t => t.id !== selectedTemplateId);
                 localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-
                 selectedTemplateId = templates[0].id;
                 localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
-
-                // Reset values state map
                 inputValuesMap = {};
-
-                renderTopicsList();
-                loadTemplate(selectedTemplateId);
-                switchTab('form');
-                closeDeleteConfirmModal();
-                showToast('delete', `ลบหัวข้อ "${title}" เรียบร้อยแล้ว`);
+                renderTopicsList(); loadTemplate(selectedTemplateId); switchTab('form');
+                closeDeleteConfirmModal(); showToast('delete', 'ลบหัวข้อสำเร็จ');
             };
         }
-
-        function closeDeleteConfirmModal() {
-            document.getElementById('deleteConfirmModal').classList.add('hidden');
-        }
+        function closeDeleteConfirmModal() { document.getElementById('deleteConfirmModal').classList.add('hidden'); }
 
         function copyToClipboard() {
-            const outputArea = document.getElementById('outputDisplay');
-            const textToCopy = outputArea.value;
-
-            // Clean clipboard handler
-            navigator.clipboard.writeText(textToCopy)
-                .then(() => {
-                    triggerCopyAnimation();
-                })
-                .catch(err => {
-                    fallbackCopyHelper(textToCopy);
-                });
+            const textToCopy = document.getElementById('outputDisplay').value;
+            navigator.clipboard.writeText(textToCopy).then(() => triggerCopyAnimation()).catch(() => fallbackCopyHelper(textToCopy));
         }
 
         function fallbackCopyHelper(text) {
             const temp = document.createElement("textarea");
-            temp.value = text;
-            temp.style.position = "fixed";
-            temp.style.left = "-9999px";
-            temp.style.top = "0";
-            document.body.appendChild(temp);
-            temp.focus();
-            temp.select();
-            try {
-                const successful = document.execCommand('copy');
-                if (successful) {
-                    triggerCopyAnimation();
-                }
-            } catch (err) {
-                console.error('Copy operations failed: ', err);
-            }
+            temp.value = text; temp.style.position = "fixed"; temp.style.left = "-9999px"; temp.style.top = "0";
+            document.body.appendChild(temp); temp.focus(); temp.select();
+            try { if (document.execCommand('copy')) triggerCopyAnimation(); } catch (err) {}
             document.body.removeChild(temp);
         }
 
         function triggerCopyAnimation() {
             const feedback = document.getElementById('copyFeedback');
-            feedback.classList.remove('opacity-0');
-            feedback.classList.add('opacity-100');
-
-            showToast('copy', 'คัดลอกรายงานลงคลิปบอร์ดแล้ว!');
-
-            setTimeout(() => {
-                feedback.classList.remove('opacity-100');
-                feedback.classList.add('opacity-0');
-            }, 2500);
+            feedback.classList.remove('opacity-0'); feedback.classList.add('opacity-100');
+            showToast('copy', 'คัดลอกลงคลิปบอร์ดแล้ว');
+            setTimeout(() => { feedback.classList.remove('opacity-100'); feedback.classList.add('opacity-0'); }, 2500);
         }
 
-        // Export templates as backup JSON
         function exportAllTemplates() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(templates, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "daily_report_backup.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-            showToast('save', 'ส่งออกไฟล์สำรอง JSON เรียบร้อย');
+            const a = document.createElement('a'); a.href = dataStr; a.download = "daily_report_backup.json";
+            document.body.appendChild(a); a.click(); a.remove();
+            showToast('save', 'ส่งออกข้อมูลเรียบร้อย');
         }
 
-        // Import backup (รองรับทั้ง JSON และ TXT)
-        function triggerImport() {
-            document.getElementById('importFileInput').click();
-        }
-
+        function triggerImport() { document.getElementById('importFileInput').click(); }
         function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            const fileName = file.name;
-            const isTextFile = fileName.toLowerCase().endsWith('.txt');
-
+            const isTextFile = file.name.toLowerCase().endsWith('.txt');
             const reader = new FileReader();
             reader.onload = function(e) {
                 if (isTextFile) {
-                    // ลอจิกการนำเข้าไฟล์ .txt ให้ดึงข้อความขึ้นไปไว้ใน Modal พรีวิวเพื่อให้ผู้ใช้ตรวจสอบก่อนบันทึก
-                    const content = e.target.result;
-                    // ลบนามสกุล .txt ออกเพื่อนำมาเป็นชื่อหัวข้อตั้งต้น
-                    const title = fileName.replace(/\.[^/.]+$/, ""); 
-                    
-                    document.getElementById('newTitleInput').value = title;
-                    document.getElementById('newTemplateContent').value = content;
+                    document.getElementById('newTitleInput').value = file.name.replace(/\.[^/.]+$/, "");
+                    document.getElementById('newTemplateContent').value = e.target.result;
                     document.getElementById('newTemplateModal').classList.remove('hidden');
-                    
-                    showToast('copy', 'โหลดข้อมูลจากไฟล์ Text สำเร็จ! โปรดตรวจสอบก่อนบันทึก');
                 } else {
-                    // ลอจิกสำหรับนำเข้าไฟล์ .json (อัปเดตแทนที่ระบบเดิมทั้งหมด)
                     try {
                         const imported = JSON.parse(e.target.result);
                         if (Array.isArray(imported) && imported.length > 0 && imported[0].title) {
@@ -1276,47 +906,36 @@
                             localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
                             selectedTemplateId = templates[0].id;
                             localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
-                            
                             inputValuesMap = {};
-                            renderTopicsList();
-                            loadTemplate(selectedTemplateId);
-                            showToast('save', 'นำเข้าเทมเพลต JSON เรียบร้อยทั้งหมดแล้ว!');
-                        } else {
-                            showToast('error', 'โครงสร้างไฟล์สำรอง JSON ไม่ถูกต้อง');
-                        }
-                    } catch (err) {
-                        showToast('error', 'เกิดข้อผิดพลาดในการนำเข้าไฟล์ JSON');
-                    }
+                            renderTopicsList(); loadTemplate(selectedTemplateId);
+                            showToast('save', 'นำเข้าข้อมูลเรียบร้อย');
+                        } else throw new Error();
+                    } catch (err) { showToast('error', 'ไฟล์ไม่ถูกต้อง'); }
                 }
             };
-            reader.readAsText(file);
-            
-            // รีเซ็ต input value เพื่อให้สามารถเลือกไฟล์เดิมซ้ำได้ในกรณีที่กดยกเลิก
-            event.target.value = '';
+            reader.readAsText(file); event.target.value = '';
         }
 
-        // Toast notifications logic helper
+        // Apple Dynamic Island style notification
         function showToast(type, message) {
             const toast = document.getElementById('toastNotification');
             const iconContainer = document.getElementById('toastIconContainer');
-            const msgEl = document.getElementById('toastMessage');
-
-            msgEl.innerText = message;
+            document.getElementById('toastMessage').innerText = message;
             
-            let iconMarkup = '<i class="fa-solid fa-circle-info text-emerald-400"></i>';
-            if (type === 'copy') iconMarkup = '<i class="fa-solid fa-copy text-teal-400"></i>';
-            else if (type === 'save') iconMarkup = '<i class="fa-solid fa-cloud-arrow-up text-emerald-400"></i>';
-            else if (type === 'delete') iconMarkup = '<i class="fa-solid fa-trash-alt text-amber-400"></i>';
-            else if (type === 'error') iconMarkup = '<i class="fa-solid fa-circle-exclamation text-rose-500"></i>';
+            let iconMarkup = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+            if (type === 'copy') iconMarkup = '<i class="fa-solid fa-clone text-apple-green"></i>';
+            else if (type === 'save') iconMarkup = '<i class="fa-solid fa-cloud-arrow-up text-apple-blue"></i>';
+            else if (type === 'delete') iconMarkup = '<i class="fa-solid fa-trash-alt text-red-400"></i>';
+            else if (type === 'error') iconMarkup = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
 
             iconContainer.innerHTML = iconMarkup;
 
-            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.remove('-translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
 
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
-                toast.classList.add('translate-y-20', 'opacity-0');
+                toast.classList.add('-translate-y-20', 'opacity-0');
             }, 2500);
         }
     </script>
