@@ -3,49 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Routine Report Workspace</title>
+    <title>Daily Routine Report Workspace - Cloud Edition</title>
     
-    <!-- Tailwind CSS for modern utility layout styling -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Inter & Sarabun for ultra-crisp English & Thai typography -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800&family=Sarabun:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- FontAwesome Pro alternative via CDN -->
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase App & Firestore SDK (Compat) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Sarabun', 'Inter', 'sans-serif'],
-                    },
+                    fontFamily: { sans: ['Sarabun', 'Inter', 'sans-serif'] },
                     boxShadow: {
                         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
-                        'glass-inset': 'inset 0 0 0 1px rgba(255, 255, 255, 0.4)',
                         'glass-floating': '0 20px 40px -10px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05)',
-                        'apple-btn': '0 1px 2px rgba(0,0,0,0.04), 0 1px 2px rgba(255,255,255,0.5) inset',
                     },
                     colors: {
-                        apple: {
-                            blue: '#007AFF',
-                            green: '#34C759',
-                            gray: '#F2F2F7',
-                            darkText: '#1C1C1E',
-                            subText: '#8E8E93'
-                        }
-                    },
-                    animation: {
-                        'blob': 'blob 10s infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        }
+                        apple: { blue: '#007AFF', green: '#34C759', gray: '#F2F2F7', darkText: '#1C1C1E', subText: '#8E8E93' }
                     }
                 }
             }
@@ -53,29 +36,10 @@
     </script>
     
     <style>
-        body {
-            font-family: 'Sarabun', 'Inter', sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            background-color: #e2e8f0; /* ปรับพื้นหลังให้เข้มขึ้นเล็กน้อย ดันให้เลเยอร์กระจกโดดเด่น */
-        }
-        /* Custom sleek scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(0,0,0,0.15);
-            border-radius: 9999px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: rgba(0,0,0,0.3);
-        }
-        
-        /* Glassmorphism utility classes */
+        body { font-family: 'Sarabun', 'Inter', sans-serif; background-color: #e2e8f0; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 9999px; }
         .glass-panel {
             background: rgba(255, 255, 255, 0.52);
             backdrop-filter: blur(40px) saturate(190%);
@@ -88,61 +52,56 @@
             backdrop-filter: blur(20px) saturate(160%);
             -webkit-backdrop-filter: blur(20px) saturate(160%);
             border: 1px solid rgba(255, 255, 255, 0.75);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04), inset 0 1px 0 0 rgba(255, 255, 255, 0.8);
         }
         .glass-input {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.02);
         }
         .glass-input:focus {
             background: rgba(255, 255, 255, 0.92);
             border-color: rgba(0, 122, 255, 0.5);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2), inset 0 1px 2px rgba(0,0,0,0.02);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.2);
         }
     </style>
 </head>
-<body class="h-full flex flex-col text-apple-darkText selection:bg-blue-100 selection:text-apple-blue overflow-hidden relative">
+<body class="h-full flex flex-col text-apple-darkText overflow-hidden relative">
 
-    <!-- Abstract Ambient Background (Mesh Gradient effect) -->
+    <!-- Ambient Background -->
     <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none bg-slate-200">
-        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob"></div>
-        <div class="absolute top-[20%] right-[-10%] w-[45vw] h-[45vw] bg-purple-600/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob" style="animation-delay: 2s;"></div>
-        <div class="absolute bottom-[-20%] left-[20%] w-[60vw] h-[60vw] bg-teal-500/50 rounded-full mix-blend-multiply filter blur-[90px] opacity-100 animate-blob" style="animation-delay: 4s;"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-blue-600/40 rounded-full filter blur-[90px] animate-pulse"></div>
+        <div class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/40 rounded-full filter blur-[90px] animate-pulse"></div>
     </div>
 
     <!-- Top Floating Header -->
-    <header class="mx-4 mt-4 lg:mx-8 lg:mt-6 z-40 transition-all shrink-0">
+    <header class="mx-4 mt-4 lg:mx-8 lg:mt-6 z-45 shrink-0">
         <div class="glass-panel rounded-3xl px-5 py-3 flex flex-col sm:flex-row justify-between items-center gap-4">
-            
-            <!-- Logo area -->
             <div class="flex items-center gap-3.5">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-b from-blue-500 to-apple-blue text-white flex items-center justify-center shadow-md shadow-blue-200">
-                    <i class="fa-solid fa-layer-group text-lg"></i>
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-b from-blue-500 to-apple-blue text-white flex items-center justify-center shadow-md">
+                    <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
                 </div>
                 <div>
                     <h1 class="text-lg font-bold text-apple-darkText tracking-tight flex items-center gap-2">
-                        <span>TEMPLATE</span>
-                        <span class="text-[10px] bg-black/5 text-slate-500 font-bold px-2 py-0.5 rounded-full border border-black/5 uppercase tracking-widest">M-FLOW</span>
+                        <span>TEMPLATE M-FLOW</span>
+                        <span id="cloudStatusBadge" class="text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span> กำลังเชื่อมต่อ Cloud...
+                        </span>
                     </h1>
                 </div>
             </div>
             
-            <!-- Quick actions -->
-            <div class="flex items-center gap-2 sm:gap-3 self-stretch sm:self-auto justify-end">
-                <button onclick="exportAllTemplates()" class="w-9 h-9 sm:w-auto sm:px-4 sm:h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-apple-darkText bg-white/50 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="ส่งออกเป็นไฟล์สำรอง">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden sm:inline">สำรองข้อมูล</span>
+            <div class="flex items-center gap-2 sm:gap-3">
+                <button onclick="backupToCloud()" class="px-4 h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 bg-white/70 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="สำรองข้อมูลขึ้น Cloud และโหลดไฟล์ JSON">
+                    <i class="fa-solid fa-cloud-arrow-up text-apple-blue"></i> <span>สำรองข้อมูล</span>
                 </button>
-                <button onclick="triggerImport()" class="w-9 h-9 sm:w-auto sm:px-4 sm:h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-600 hover:text-apple-darkText bg-white/50 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="นำเข้าไฟล์สำรอง (.json/.txt)">
-                    <i class="fa-solid fa-cloud-arrow-up"></i> <span class="hidden sm:inline">นำเข้า</span>
+                <button onclick="triggerImport()" class="px-4 h-9 flex items-center justify-center gap-2 text-xs font-semibold text-slate-700 bg-white/70 hover:bg-white rounded-full transition-all shadow-sm border border-white" title="ดึงข้อมูลล่าสุดจาก Cloud หรือไฟล์">
+                    <i class="fa-solid fa-cloud-arrow-down text-apple-green"></i> <span>นำเข้า (Cloud/File)</span>
                 </button>
-                <input type="file" id="importFileInput" accept=".json, .txt" class="hidden" onchange="handleImport(event)">
+                <input type="file" id="importFileInput" accept=".json, .txt" class="hidden" onchange="handleFileImport(event)">
                 
                 <span class="h-5 w-[1px] bg-slate-300/50 block mx-1"></span>
 
-                <button onclick="openNewTemplateModal()" class="flex items-center justify-center gap-2 px-4 h-9 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-black rounded-full shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300">
+                <button onclick="openNewTemplateModal()" class="flex items-center justify-center gap-2 px-4 h-9 text-xs sm:text-sm font-bold text-white bg-slate-800 hover:bg-black rounded-full shadow-md transition-all">
                     <i class="fa-solid fa-plus text-[10px]"></i> เพิ่มหัวข้อ
                 </button>
             </div>
@@ -151,12 +110,12 @@
 
     <div class="mx-4 lg:mx-8 mt-3 shrink-0">
         <div class="flex flex-col sm:flex-row items-center justify-between gap-2 px-2">
-            <div class="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
-                <i class="fa-solid fa-lightbulb text-amber-500 text-sm"></i>
-                <span class="text-xs text-slate-500 font-medium">พิมพ์เครื่องหมาย <span class="font-mono bg-white/60 px-1.5 py-0.5 rounded-md border border-black/5 shadow-sm">...</span> เพื่อสร้างช่องกรอกข้อมูลอัตโนมัติ</span>
+            <div class="flex items-center gap-2 opacity-70">
+                <i class="fa-solid fa-shield-halved text-apple-blue text-sm"></i>
+                <span class="text-xs text-slate-600 font-medium">ระบบซิงค์ข้อมูลอัตโนมัติผ่าน Firebase Cloud รองรับการใช้งานทุกเครื่อง</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="text-[11px] font-semibold bg-white/50 backdrop-blur-md text-slate-600 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white shadow-sm">
+                <span class="text-[11px] font-semibold bg-white/60 text-slate-700 px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white shadow-sm">
                     <span class="w-1.5 h-1.5 rounded-full bg-apple-green inline-block animate-pulse"></span>
                     <span id="currentTimeDisplay">--:--:--</span>
                 </span>
@@ -164,53 +123,42 @@
         </div>
     </div>
 
+    <!-- Main Workspace -->
     <main class="flex-1 w-full mx-auto p-4 lg:px-8 pb-6 flex flex-col lg:flex-row gap-5 overflow-hidden">
         
-        <!-- LEFT COLUMN: Sidebar (Topic selection) -->
-        <section id="sidebarBox" class="w-full lg:w-[280px] xl:w-[320px] flex flex-col glass-panel rounded-3xl transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-hidden shrink-0">
-            <!-- Sidebar Header -->
+        <!-- LEFT: Sidebar -->
+        <section id="sidebarBox" class="w-full lg:w-[280px] xl:w-[320px] flex flex-col glass-panel rounded-3xl overflow-hidden shrink-0">
             <div class="p-5 pb-3 flex items-center justify-between shrink-0">
-                <h2 class="font-bold text-apple-darkText text-sm tracking-wide">รายการหัวข้อรายงาน</h2>
+                <h2 class="font-bold text-apple-darkText text-sm">รายการหัวข้อรายงาน</h2>
                 <div class="flex items-center gap-1.5">
                     <span id="totalTemplatesCount" class="text-[10px] font-bold bg-black/5 text-slate-600 px-2 py-0.5 rounded-full">0</span>
-                    <button onclick="toggleSidebar()" class="w-7 h-7 rounded-full hover:bg-black/5 text-slate-400 hover:text-slate-600 flex items-center justify-center transition-all">
-                        <i class="fa-solid fa-bars-staggered text-xs"></i>
-                    </button>
                 </div>
             </div>
 
-            <!-- Search Filter -->
             <div class="px-4 pb-3 shrink-0">
                 <div class="relative">
                     <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="searchBar" oninput="filterTemplates()" placeholder="ค้นหาตามชื่อหัวข้อ..." class="w-full pl-8 pr-4 py-2 text-xs sm:text-sm rounded-xl glass-input placeholder:text-slate-400 transition-all">
+                    <input type="text" id="searchBar" oninput="filterTemplates()" placeholder="ค้นหาตามชื่อหัวข้อ..." class="w-full pl-8 pr-4 py-2 text-xs sm:text-sm rounded-xl glass-input">
                 </div>
             </div>
 
-            <!-- Topics List -->
-            <div id="topicsList" class="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5 max-h-[200px] lg:max-h-none min-h-[100px]">
-                <!-- Filled dynamically -->
-            </div>
+            <div id="topicsList" class="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5 min-h-[100px]"></div>
         </section>
 
-        <!-- RIGHT COLUMN: Main Content Area -->
-        <section id="detailsBox" class="flex-1 flex flex-col glass-panel rounded-3xl transition-all duration-300 overflow-hidden relative shadow-glass-floating">
+        <!-- RIGHT: Content Area -->
+        <section id="detailsBox" class="flex-1 flex flex-col glass-panel rounded-3xl overflow-hidden relative shadow-glass-floating">
             
-            <!-- Content Header -->
             <div class="px-5 py-4 border-b border-black/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shrink-0 bg-white/30">
                 <div class="flex items-center gap-3">
-                    <div>
-                        <h2 class="font-bold text-apple-darkText text-sm sm:text-base flex items-center gap-2">
-                            <span id="activeTemplateTitle">...</span>
-                        </h2>
-                    </div>
-                    <button id="headerDeleteBtn" onclick="deleteCurrentTemplate()" class="ml-auto sm:ml-2 w-7 h-7 rounded-full hover:bg-red-50 text-red-400 hover:text-red-500 flex items-center justify-center transition-all" title="ลบหัวข้อรายงานนี้">
+                    <h2 class="font-bold text-apple-darkText text-sm sm:text-base">
+                        <span id="activeTemplateTitle">...</span>
+                    </h2>
+                    <button id="headerDeleteBtn" onclick="deleteCurrentTemplate()" class="ml-auto sm:ml-2 w-7 h-7 rounded-full hover:bg-red-50 text-red-400 flex items-center justify-center transition-all" title="ลบหัวข้อ">
                         <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
                 </div>
                 
-                <!-- iOS Segmented Control Tab -->
-                <div class="flex items-center bg-black/5 p-1 rounded-xl self-start sm:self-auto backdrop-blur-md">
+                <div class="flex items-center bg-black/5 p-1 rounded-xl">
                     <button id="tabFormBtn" onclick="switchTab('form')" class="px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5">
                         <i class="fa-solid fa-list-check opacity-70"></i> กรอกฟอร์ม
                     </button>
@@ -220,75 +168,59 @@
                 </div>
             </div>
 
-            <!-- Workspace Panes -->
             <div class="flex-1 flex flex-col md:flex-row overflow-hidden relative">
                 
-                <!-- PANE 1: Dynamic Form -->
-                <div id="dynamicFormPane" class="w-full md:w-1/2 p-5 overflow-y-auto space-y-4 flex flex-col min-w-0 border-b md:border-b-0 md:border-r border-black/5 bg-white/40">
+                <!-- Pane 1: Form & Persistent Inputs -->
+                <div id="dynamicFormPane" class="w-full md:w-1/2 p-5 overflow-y-auto space-y-4 flex flex-col border-b md:border-b-0 md:border-r border-black/5 bg-white/40">
                     <div class="flex items-center justify-between shrink-0">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-keyboard text-apple-blue"></i> ข้อมูลที่ต้องการ
+                            <i class="fa-solid fa-keyboard text-apple-blue"></i> ข้อมูลที่ต้องการ (บันทึกอัตโนมัติบน Cloud)
                         </span>
-                        <button onclick="clearAllFields()" class="text-[11px] px-2.5 py-1 bg-white/50 hover:bg-white rounded-full text-slate-600 hover:text-red-500 font-bold transition-all shadow-sm border border-white flex items-center gap-1">
+                        <button onclick="clearCurrentTemplateFields()" class="text-[11px] px-2.5 py-1 bg-white/50 hover:bg-white rounded-full text-slate-600 hover:text-red-500 font-bold transition-all shadow-sm border border-white flex items-center gap-1">
                             <i class="fa-solid fa-arrow-rotate-left"></i> ล้างค่า
                         </button>
                     </div>
 
-                    <!-- Sub-Period Segmented Control -->
-                    <div id="subPeriodSelectorContainer" class="hidden glass-card rounded-2xl p-2 shrink-0 min-w-0 shadow-sm">
-                        <div id="subPeriodTabList" class="flex flex-row bg-black/5 p-1 rounded-xl w-full min-w-0 gap-1">
-                            <!-- Dynamic sub-period tab buttons go here -->
-                        </div>
+                    <div id="subPeriodSelectorContainer" class="hidden glass-card rounded-2xl p-2 shrink-0 shadow-sm">
+                        <div id="subPeriodTabList" class="flex flex-row bg-black/5 p-1 rounded-xl w-full gap-1"></div>
                     </div>
                     
-                    <!-- Dynamic Fields Container -->
-                    <div id="formFieldsContainer" class="flex-1 flex flex-col gap-3 overflow-y-auto pb-4 min-w-0">
-                        <div class="text-center py-16 text-slate-500">
-                            <i class="fa-brands fa-apple text-4xl mb-3 opacity-40"></i>
-                            <p class="text-sm font-medium">โปรดเลือกหัวข้อรายงาน</p>
-                        </div>
-                    </div>
+                    <div id="formFieldsContainer" class="flex-1 flex flex-col gap-3 overflow-y-auto pb-4"></div>
                 </div>
 
-                <!-- PANE 2: Raw Template Editor -->
-                <div id="rawEditPane" class="hidden w-full md:w-1/2 p-5 flex flex-col gap-3 min-w-0 border-b md:border-b-0 md:border-r border-black/5 bg-white/40">
+                <!-- Pane 2: Raw Editor -->
+                <div id="rawEditPane" class="hidden w-full md:w-1/2 p-5 flex flex-col gap-3 border-r border-black/5 bg-white/40">
                     <div class="flex items-center justify-between pb-1">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-code text-apple-blue"></i> โครงร่างต้นฉบับ
                         </span>
                     </div>
-
-                    <div id="rawSubPeriodWarning" class="hidden text-[11px] bg-blue-50/50 border border-blue-100 text-blue-800 px-3 py-2 rounded-xl backdrop-blur-md">
+                    <div id="rawSubPeriodWarning" class="hidden text-[11px] bg-blue-50/50 border border-blue-100 text-blue-800 px-3 py-2 rounded-xl">
                         <i class="fa-solid fa-circle-info mr-1"></i> แก้ไขเฉพาะช่วงเวลาที่เลือกอยู่เท่านั้น
                     </div>
-                    
-                    <textarea id="rawTextarea" oninput="onRawTemplateChange()" class="flex-1 w-full min-h-[220px] p-4 text-[13px] font-mono border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-apple-blue/40 transition-all bg-white/80 backdrop-blur-md shadow-inner leading-relaxed resize-none text-slate-800" placeholder="พิมพ์โครงร่างเทมเพลตที่นี่..."></textarea>
-                    
-                    <button onclick="saveTemplateChanges()" class="w-full py-3 mt-1 bg-slate-800 hover:bg-black text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                    <textarea id="rawTextarea" oninput="onRawTemplateChange()" class="flex-1 w-full p-4 text-[13px] font-mono border-0 rounded-2xl focus:outline-none focus:ring-2 focus:ring-apple-blue/40 bg-white/80 shadow-inner resize-none text-slate-800"></textarea>
+                    <button onclick="saveTemplateChanges()" class="w-full py-3 bg-slate-800 hover:bg-black text-white rounded-2xl text-xs font-bold shadow-md transition-all">
                         <i class="fa-solid fa-floppy-disk"></i> บันทึกโครงร่าง
                     </button>
                 </div>
 
-                <!-- PANE 3: Ready to send output -->
-                <div class="flex-1 p-5 bg-gradient-to-br from-white/60 to-white/30 flex flex-col overflow-hidden min-w-0 relative">
+                <!-- Pane 3: Output & Copy -->
+                <div class="flex-1 p-5 bg-gradient-to-br from-white/60 to-white/30 flex flex-col overflow-hidden relative">
                     <div class="flex items-center justify-between mb-3 shrink-0">
                         <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                             <i class="fa-solid fa-paper-plane text-apple-green"></i> ผลลัพธ์พร้อมส่ง
                         </span>
                         <span id="copyFeedback" class="text-[10px] font-bold text-apple-green opacity-0 transition-opacity duration-300 bg-white border border-green-200 px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1">
-                            <i class="fa-solid fa-check"></i> คัดลอกแล้ว
+                            <i class="fa-solid fa-check"></i> คัดลอกและบันทึกค่าแล้ว
                         </span>
                     </div>
 
                     <div class="flex-1 flex flex-col relative bg-white/90 backdrop-blur-xl border border-white/80 rounded-2xl overflow-hidden shadow-sm min-h-[200px]">
-                        
                         <div id="outputDisplayHTML" class="flex-1 p-5 text-[13px] sm:text-sm font-sans text-apple-darkText overflow-y-auto whitespace-pre-wrap leading-relaxed select-text pb-20"></div>
-                        
                         <textarea id="outputDisplay" readonly class="hidden"></textarea>
                         
-                        <!-- Floating Copy Button inside output -->
                         <div class="absolute bottom-4 right-4 left-4 flex justify-end">
-                            <button onclick="copyToClipboard()" class="flex items-center gap-2 px-5 py-2.5 bg-apple-blue hover:bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 cursor-pointer backdrop-blur-md">
+                            <button onclick="copyToClipboard()" class="flex items-center gap-2 px-5 py-2.5 bg-apple-blue hover:bg-blue-600 text-white text-sm font-bold rounded-full shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 cursor-pointer">
                                 <i class="fa-solid fa-copy"></i> คัดลอกรายงาน
                             </button>
                         </div>
@@ -298,136 +230,138 @@
         </section>
     </main>
 
-    <!-- New Template Modal -->
-    <div id="newTemplateModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
-        <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-xl border border-white transform transition-all flex flex-col overflow-hidden">
-            <div class="p-5 flex items-center justify-between border-b border-black/5">
-                <h3 class="font-bold text-apple-darkText flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-full bg-apple-blue/10 text-apple-blue flex items-center justify-center"><i class="fa-solid fa-plus text-sm"></i></div>
-                    สร้างหัวข้อรายงานใหม่
-                </h3>
-                <button onclick="closeNewTemplateModal()" class="w-8 h-8 rounded-full bg-black/5 hover:bg-black/10 text-slate-500 flex items-center justify-center transition-all">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            
-            <form onsubmit="handleCreateTemplate(event)" class="p-6 space-y-5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-2 ml-1">ชื่อหัวข้อรายงาน</label>
-                    <input type="text" id="newTitleInput" required placeholder="เช่น: รายงานยอดขาย, ส่งมอบกะ" class="w-full px-4 py-3 rounded-2xl glass-input focus:outline-none focus:ring-2 focus:ring-apple-blue/30 text-sm transition-all">
-                </div>
-                <div>
-                    <div class="flex justify-between items-center mb-2 ml-1">
-                        <label class="block text-xs font-semibold text-slate-500">เนื้อหาต้นฉบับ</label>
-                        <span class="text-[10px] font-medium text-slate-400">พิมพ์ <code class="bg-black/5 px-1 rounded">...</code> เพื่อเว้นช่องกรอก</span>
-                    </div>
-                    <textarea id="newTemplateContent" required rows="6" placeholder="เรียนหัวหน้า...&#10;&#10;สรุปยอดประจำวันที่ ...&#10;- ยอดรวม: ... บาท" class="w-full px-4 py-3 rounded-2xl glass-input focus:outline-none focus:ring-2 focus:ring-apple-blue/30 text-xs sm:text-sm font-mono leading-relaxed resize-none transition-all"></textarea>
-                </div>
-
+    <!-- Modals (New Template & Delete Confirm) -->
+    <div id="newTemplateModal" class="hidden fixed inset-0 z-50 bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-xl border border-white p-6 flex flex-col">
+            <h3 class="font-bold text-apple-darkText flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-full bg-apple-blue/10 text-apple-blue flex items-center justify-center"><i class="fa-solid fa-plus text-sm"></i></div>
+                สร้างหัวข้อรายงานใหม่
+            </h3>
+            <form onsubmit="handleCreateTemplate(event)" class="space-y-4">
+                <input type="text" id="newTitleInput" required placeholder="ชื่อหัวข้อรายงาน..." class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
+                <textarea id="newTemplateContent" required rows="5" placeholder="เนื้อหาต้นฉบับ (พิมพ์ ... เพื่อเว้นช่องกรอก)..." class="w-full px-4 py-3 rounded-2xl glass-input text-xs font-mono"></textarea>
                 <div class="flex justify-end gap-2 pt-2">
-                    <button type="button" onclick="closeNewTemplateModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold transition-all">ยกเลิก</button>
-                    <button type="submit" class="px-6 py-2.5 bg-apple-blue hover:bg-blue-600 text-white rounded-full text-sm font-bold shadow-md shadow-blue-500/20 transition-all">บันทึก</button>
+                    <button type="button" onclick="closeNewTemplateModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-apple-blue text-white rounded-full text-sm font-bold shadow-md">บันทึก</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Confirm Delete Modal -->
-    <div id="deleteConfirmModal" class="hidden fixed inset-0 z-[60] overflow-y-auto bg-black/20 backdrop-blur-md flex justify-center items-center p-4">
-        <div class="bg-white/90 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white transform transition-all p-6 text-center">
-            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-500 text-2xl">
-                <i class="fa-solid fa-trash-can"></i>
-            </div>
-            <h3 class="text-base font-bold text-apple-darkText mb-2">ลบหัวข้อรายงาน?</h3>
-            <p id="deleteConfirmMessage" class="text-[13px] text-slate-500 mb-6 leading-relaxed">ข้อมูลทั้งหมดในหัวข้อนี้จะหายไปและไม่สามารถกู้คืนได้</p>
-            <div class="flex flex-col gap-2">
-                <button id="confirmDeleteBtn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-2xl text-sm font-bold shadow-md transition-all">ลบถาวร</button>
-                <button onclick="closeDeleteConfirmModal()" class="w-full py-3 bg-black/5 hover:bg-black/10 text-slate-600 rounded-2xl text-sm font-bold transition-all">ยกเลิก</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification (iOS Dynamic Island style) -->
+    <!-- Toast Notification -->
     <div id="toastNotification" class="fixed top-6 left-1/2 -translate-x-1/2 z-[70] transform -translate-y-20 opacity-0 transition-all duration-400 ease-out bg-black/80 backdrop-blur-xl text-white text-xs sm:text-sm px-4 py-2.5 rounded-full shadow-2xl flex items-center gap-2.5 pointer-events-none border border-white/10">
-        <div id="toastIconContainer" class="flex items-center justify-center"></div>
-        <p id="toastMessage" class="font-medium tracking-wide"></p>
+        <div id="toastIconContainer"></div>
+        <p id="toastMessage" class="font-medium"></p>
     </div>
 
     <script>
-        // Preset default templates
+        // ==========================================
+        // FIREBASE CONFIGURATION (แทนที่ด้วยค่าของคุณ)
+        // ==========================================
+        const firebaseConfig = {
+    apiKey: "AIzaSyAuL7PRpKl9ha_qQix8eVeVzkVQ7F8AdyY",
+    authDomain: "template-m-flow.firebaseapp.com",
+    projectId: "template-m-flow",
+    storageBucket: "template-m-flow.firebasestorage.app",
+    messagingSenderId: "265142411995",
+    appId: "1:265142411995:web:68a22fb7196aba90ffe2fe"
+  };
+
+        // Initialize Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const CLOUD_DOC_REF = db.collection("mflow_reports").doc("shared_workspace");
+
+        // Default Templates Setup
         const defaultTemplates = [
             {
                 id: "sla-8-min",
                 title: "SLA 8 นาที",
                 activeSubPeriodIndex: 0,
                 subPeriods: [
-                    {
-                        name: "00:00 - 04:59 น.",
-                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 00:00 - 04:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- TG กะ C เข้างาน ... คน\n\nขอบคุณครับ`
-                    },
-                    {
-                        name: "05:00 - 13:59 น.",
-                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 05:00 - 13:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม A เข้างานจริง ... คน\n- Temp ทีม M เข้างานจริง ... คน\n\nขอบคุณครับ`
-                    },
-                    {
-                        name: "14:00 - 22:59 น.",
-                        content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 14:00 - 22:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม M เข้างานจริง ... คน\n- Temp ทีม B เข้างานจริง ... คน\n\nขอบคุณครับ`
-                    }
+                    { name: "00:00 - 04:59 น.", content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 00:00 - 04:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- TG กะ C เข้างาน ... คน\n\nขอบคุณครับ` },
+                    { name: "05:00 - 13:59 น.", content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 05:00 - 13:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม A เข้างานจริง ... คน\n- Temp ทีม M เข้างานจริง ... คน\n\nขอบคุณครับ` },
+                    { name: "14:00 - 22:59 น.", content: `เรียนพี่ๆ ครับ\n\nรายงานผลการอนุมัติรายการ (SLA) วันที่ ... เวลา 14:00 - 22:59 น.\n\n-> จำนวนอนุมัติทั้งหมด : ... รายการ\n-> อนุมัติน้อยกว่า 8 นาที : ... รายการ\n-> อนุมัติมากกว่า 8 นาที : ... รายการ\n-> ค่าเฉลี่ย :  ... นาที\n---------------\n- Temp ทีม M เข้างานจริง ... คน\n- Temp ทีม B เข้างานจริง ... คน\n\nขอบคุณครับ` }
                 ]
             },
             {
                 id: "shift-handover",
                 title: "ส่งมอบกะประจำวัน",
                 content: `รายงานส่งมอบงานกะ ... ประจำวันที่ ...\n\nผู้รับผิดชอบ: ...\n\nสรุปงาน:\n- เคสทั้งหมด: ... รายการ\n- เสร็จสิ้น: ... รายการ\n- ตกค้าง: ... รายการ\n\nปัญหาที่พบ:\n- ...\n\nขอบคุณครับ`
-            },
-            {
-                id: "system-health-check",
-                title: "Health Check ระบบ",
-                content: `บันทึกตรวจเช็กระบบรอบเวลา ... น.\nวันที่ ...\n\nสถานะ:\n- CPU Usage: ... %\n- Memory: ... %\n- Database: ...\n\nผลวิเคราะห์: ...\nบันทึกโดย: ...`
             }
         ];
 
         let templates = [];
+        let inputValuesMap = {}; // เก็บค่าที่กรอกแยกตาม templateId_subIndex
         let selectedTemplateId = "";
         let currentTab = 'form';
-        let inputValuesMap = {}; 
 
-        // Auto Migrator logic
-        function migrateLegacyTemplates() {
-            const oldData = localStorage.getItem('routine_templates_v2');
-            if (oldData && !localStorage.getItem('routine_templates_v3')) {
-                try {
-                    const parsed = JSON.parse(oldData);
-                    parsed.forEach(t => {
-                        if (t.content) t.content = t.content.replace(/\{\{[^}]+\}\}/g, '...');
-                        if (t.subPeriods) {
-                            t.subPeriods.forEach(p => {
-                                if (p.content) p.content = p.content.replace(/\{\{[^}]+\}\}/g, '...');
-                            });
-                        }
-                    });
-                    localStorage.setItem('routine_templates_v3', JSON.stringify(parsed));
-                } catch(e) {}
+        window.onload = async function() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            await loadDataFromCloudOrLocal();
+        };
+
+        // โหลดข้อมูลจาก Firebase Cloud (หากไม่มีใช้ LocalStorage / Default)
+        async function loadDataFromCloudOrLocal() {
+            try {
+                const doc = await CLOUD_DOC_REF.get();
+                if (doc.exists) {
+                    const cloudData = doc.data();
+                    templates = cloudData.templates || defaultTemplates;
+                    inputValuesMap = cloudData.inputValuesMap || {};
+                    updateCloudBadge(true, "เชื่อมต่อ Cloud สำเร็จ");
+                } else {
+                    templates = defaultTemplates;
+                    inputValuesMap = {};
+                    await saveToCloudSilent();
+                    updateCloudBadge(true, "สร้างข้อมูลบน Cloud สำเร็จ");
+                }
+            } catch (err) {
+                console.warn("Cloud connection offline, falling back to local storage", err);
+                const stored = localStorage.getItem('routine_templates_v4');
+                const storedInputs = localStorage.getItem('routine_inputs_v4');
+                templates = stored ? JSON.parse(stored) : defaultTemplates;
+                inputValuesMap = storedInputs ? JSON.parse(storedInputs) : {};
+                updateCloudBadge(false, "ออฟไลน์ (ใช้ Local)");
+            }
+
+            selectedTemplateId = localStorage.getItem('routine_selected_id_v4') || templates[0]?.id || "";
+            renderTopicsList();
+            loadTemplate(selectedTemplateId);
+        }
+
+        function updateCloudBadge(isOnline, text) {
+            const badge = document.getElementById('cloudStatusBadge');
+            badge.className = isOnline 
+                ? "text-[10px] bg-emerald-100 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-200 flex items-center gap-1"
+                : "text-[10px] bg-amber-100 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1";
+            badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} inline-block"></span> ${text}`;
+        }
+
+        async function saveToCloud() {
+            try {
+                const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
+                await CLOUD_DOC_REF.set(data);
+                localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
+                localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
+                showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
+                updateCloudBadge(true, "ซิงค์กับ Cloud แล้ว");
+            } catch (err) {
+                showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้');
             }
         }
 
-        window.onload = function() {
-            migrateLegacyTemplates();
-            const stored = localStorage.getItem('routine_templates_v3');
-            if (stored) {
-                try { templates = JSON.parse(stored); } catch(e) { templates = defaultTemplates; }
-            } else {
-                templates = defaultTemplates;
-                localStorage.setItem('routine_templates_v3', JSON.stringify(defaultTemplates));
-            }
-
-            selectedTemplateId = localStorage.getItem('routine_selected_template_id_v3') || templates[0]?.id || "";
-            updateClock();
-            setInterval(updateClock, 1000);
-            applyStoredSidebarState();
-            renderTopicsList();
-            loadTemplate(selectedTemplateId);
-        };
+        async function saveToCloudSilent() {
+            try {
+                const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
+                await CLOUD_DOC_REF.set(data);
+                localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
+                localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
+            } catch (e) {}
+        }
 
         function updateClock() {
             const now = new Date();
@@ -436,35 +370,7 @@
                 now.toLocaleTimeString('th-TH', { hour12: false });
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebarBox');
-            const icon = document.getElementById('sidebarToggleIcon');
-            const btn = document.getElementById('sidebarToggleBtn');
-            const isCurrentlyHidden = sidebar.classList.contains('lg:w-0');
-            
-            if (isCurrentlyHidden) {
-                sidebar.classList.remove('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-none', 'hidden');
-                sidebar.classList.add('w-full', 'lg:w-[280px]', 'xl:w-[320px]');
-                if (icon) icon.className = "fa-solid fa-sidebar text-xs";
-                if (btn) btn.classList.replace('bg-white', 'bg-white/50');
-                if (btn) btn.title = "ซ่อนแถบรายการ";
-                localStorage.setItem('sidebar_hidden_state', 'false');
-            } else {
-                sidebar.classList.add('lg:w-0', 'lg:opacity-0', 'lg:p-0', 'lg:border-none', 'hidden');
-                sidebar.classList.remove('w-full', 'lg:w-[280px]', 'xl:w-[320px]');
-                if (icon) icon.className = "fa-solid fa-list-ul text-xs";
-                if (btn) btn.classList.replace('bg-white/50', 'bg-white');
-                if (btn) btn.title = "แสดงแถบรายการ";
-                localStorage.setItem('sidebar_hidden_state', 'true');
-            }
-        }
-
-        function applyStoredSidebarState() {
-            const isHiddenState = localStorage.getItem('sidebar_hidden_state') === 'true';
-            if (isHiddenState) toggleSidebar(); 
-        }
-
-        // Smart Parser
+        // Smart Parser ดึงจุดที่ต้องกรอก (...)
         function getTemplateMatches(content) {
             const matches = [];
             if (!content) return matches;
@@ -476,16 +382,12 @@
                 const matchLength = match[0].length;
                 let startOfLine = content.lastIndexOf('\n', matchIndex);
                 startOfLine = startOfLine === -1 ? 0 : startOfLine + 1;
-                let startSearchIndex = Math.max(startOfLine, lastMatchEndIndex);
-                let immediatePrefixRaw = content.substring(startSearchIndex, matchIndex);
-                let textBefore = immediatePrefixRaw.replace(/^[\s\-\*\>•\+\:\u200B\,]+/g, '').trim().replace(/[\s\:\-\=\>\,]+$/g, '');
+                let textBefore = content.substring(startOfLine, matchIndex).replace(/^[\s\-\*\>•\+\:\u200B\,]+/g, '').trim();
                 let endOfLine = content.indexOf('\n', matchIndex);
                 endOfLine = endOfLine === -1 ? content.length : endOfLine;
-                let textAfterOnLine = content.substring(matchIndex + matchLength, endOfLine);
-                let textAfter = textAfterOnLine.trim().split(/[\s\.\,]/)[0].trim();
+                let textAfter = content.substring(matchIndex + matchLength, endOfLine).trim().split(/[\s\.\,]/)[0].trim();
                 
-                let label = textBefore ? (textAfter && textAfter.length < 15 ? `${textBefore} (${textAfter})` : textBefore) : (textAfter ? `ส่วนหน้า ${textAfter}` : `ช่องที่ ${index + 1}`);
-                
+                let label = textBefore ? (textAfter && textAfter.length < 15 ? `${textBefore} (${textAfter})` : textBefore) : `ช่องที่ ${index + 1}`;
                 matches.push({ id: index, startIndex: matchIndex, length: matchLength, label: label });
                 lastMatchEndIndex = matchIndex + matchLength;
                 index++;
@@ -504,28 +406,18 @@
                 const varCount = getTemplateMatches(contentString).length;
 
                 const item = document.createElement('button');
-                
-                // Styling active vs inactive with Glassmorphism
-                let itemClass = `w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all duration-200 cursor-pointer border `;
-                if (isActive) {
-                    itemClass += 'bg-white shadow-[0_4px_15px_rgba(0,0,0,0.05)] border-white text-apple-blue font-bold transform scale-[1.01]';
-                } else {
-                    itemClass += 'border-transparent text-slate-600 hover:bg-white/50 hover:border-white/50 font-medium';
-                }
-
-                item.className = itemClass;
+                item.className = `w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all cursor-pointer border ${
+                    isActive ? 'bg-white shadow-sm border-white text-apple-blue font-bold scale-[1.01]' : 'border-transparent text-slate-600 hover:bg-white/50'
+                }`;
                 item.onclick = () => loadTemplate(t.id);
-                
                 item.innerHTML = `
                     <div class="flex items-center gap-3 overflow-hidden">
-                        <div class="w-8 h-8 rounded-xl ${isActive ? 'bg-blue-50 text-apple-blue' : 'bg-black/5 text-slate-400'} flex items-center justify-center shrink-0 transition-colors">
+                        <div class="w-8 h-8 rounded-xl ${isActive ? 'bg-blue-50 text-apple-blue' : 'bg-black/5 text-slate-400'} flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-file-lines text-xs"></i>
                         </div>
-                        <span class="truncate block text-xs sm:text-sm">${t.title}</span>
+                        <span class="truncate text-xs sm:text-sm">${t.title}</span>
                     </div>
-                    <div class="flex items-center gap-2 pl-2">
-                        <span class="text-[9px] ${isActive ? 'bg-blue-100 text-blue-700' : 'bg-black/5 text-slate-400'} px-1.5 py-0.5 rounded-full font-bold whitespace-nowrap">${varCount} ช่อง</span>
-                    </div>
+                    <span class="text-[9px] ${isActive ? 'bg-blue-100 text-blue-700' : 'bg-black/5 text-slate-400'} px-1.5 py-0.5 rounded-full font-bold">${varCount} ช่อง</span>
                 `;
                 listContainer.appendChild(item);
             });
@@ -535,8 +427,7 @@
             const query = document.getElementById('searchBar').value.toLowerCase();
             const buttons = document.getElementById('topicsList').getElementsByTagName('button');
             templates.forEach((t, index) => {
-                const btn = buttons[index];
-                if (btn) btn.style.display = t.title.toLowerCase().includes(query) ? 'flex' : 'none';
+                if (buttons[index]) buttons[index].style.display = t.title.toLowerCase().includes(query) ? 'flex' : 'none';
             });
         }
 
@@ -544,13 +435,8 @@
             const selected = templates.find(t => t.id === id);
             if (!selected) return;
 
-            // BUG FIX RETAINED: Reset input values when changing topics to avoid bleeding variables
-            if (selectedTemplateId !== id) {
-                inputValuesMap = {};
-            }
-
             selectedTemplateId = id;
-            localStorage.setItem('routine_selected_template_id_v3', id);
+            localStorage.setItem('routine_selected_id_v4', id);
             renderTopicsList();
             document.getElementById('activeTemplateTitle').innerText = selected.title;
 
@@ -572,9 +458,7 @@
 
             document.getElementById('rawTextarea').value = contentToLoad;
             parseTemplateVariables(contentToLoad);
-
-            const headerDeleteBtn = document.getElementById('headerDeleteBtn');
-            headerDeleteBtn.classList.toggle('hidden', templates.length <= 1);
+            document.getElementById('headerDeleteBtn').classList.toggle('hidden', templates.length <= 1);
         }
 
         function renderSubPeriodTabs(template) {
@@ -584,47 +468,22 @@
                 const isActive = template.activeSubPeriodIndex === index;
                 const tabBtn = document.createElement('button');
                 tabBtn.type = 'button';
-                
-                // Segmented control style tabs
-                tabBtn.className = `flex-1 min-w-0 px-2 py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all ${
+                tabBtn.className = `flex-1 px-2 py-1.5 rounded-lg text-[10px] md:text-xs font-semibold transition-all ${
                     isActive ? 'bg-white text-apple-darkText shadow-sm' : 'text-slate-500 hover:text-slate-800'
                 }`;
                 tabBtn.innerText = period.name;
-                tabBtn.onclick = () => selectSubPeriod(index);
+                tabBtn.onclick = () => {
+                    template.activeSubPeriodIndex = index;
+                    loadTemplate(selectedTemplateId);
+                };
                 container.appendChild(tabBtn);
             });
         }
 
-        function selectSubPeriod(index) {
-            const selected = templates.find(t => t.id === selectedTemplateId);
-            if (!selected || !selected.subPeriods) return;
-
-            // BUG FIX RETAINED: Reset input values when changing sub-periods
-            if (selected.activeSubPeriodIndex !== index) {
-                inputValuesMap = {};
-            }
-
-            selected.activeSubPeriodIndex = index;
-            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-            loadTemplate(selectedTemplateId);
-        }
-
-        // Dynamic Helpers
-        function fillTodayDate(idx) {
-            const today = new Date();
-            setValue(idx, `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear() + 543}`);
-        }
-        function fillGregorianDate(idx) {
-            const today = new Date();
-            setValue(idx, `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`);
-        }
-        function fillCurrentTime(idx) {
-            const today = new Date();
-            setValue(idx, `${String(today.getHours()).padStart(2, '0')}:${String(today.getMinutes()).padStart(2, '0')}`);
-        }
-        function setValue(idx, val) {
-            const targetInput = document.querySelector(`[data-index="${idx}"]`);
-            if (targetInput) { targetInput.value = val; updateValueMap(idx, val); }
+        // Key สำหรับเก็บค่าใน inputValuesMap แบบแยกระหว่าง Template และ SubPeriod
+        function getCurrentKey(idx) {
+            const subIdx = templates.find(t => t.id === selectedTemplateId)?.activeSubPeriodIndex ?? 0;
+            return `${selectedTemplateId}_sub${subIdx}_field${idx}`;
         }
 
         function parseTemplateVariables(content) {
@@ -633,78 +492,69 @@
             const matches = getTemplateMatches(content);
 
             if (matches.length === 0) {
-                container.innerHTML = `
-                    <div class="p-4 bg-white/60 backdrop-blur-md rounded-2xl border border-white shadow-sm flex flex-col gap-1 items-center text-center">
-                        <div class="w-10 h-10 rounded-full bg-apple-green/10 text-apple-green flex items-center justify-center mb-2"><i class="fa-solid fa-check"></i></div>
-                        <p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน</p>
-                        <p class="text-[11px] text-slate-500">เทมเพลตนี้ไม่มีจุดที่ต้องกรอก คัดลอกได้ทันที</p>
-                    </div>
-                `;
-                updateFinalOutput(content, escapeHTMLForDisplay(content));
+                container.innerHTML = `<div class="p-4 bg-white/60 rounded-2xl border text-center"><p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน (ไม่มีช่องกรอก)</p></div>`;
+                updateFinalOutput(content, escapeHTML(content));
                 return;
             }
 
             matches.forEach((m, idx) => {
+                const mapKey = getCurrentKey(idx);
+                const currentValue = (inputValuesMap[mapKey] !== undefined ? inputValuesMap[mapKey] : '');
+                
                 const formGroup = document.createElement('div');
-                const currentValue = (inputValuesMap[idx] !== undefined ? inputValuesMap[idx] : '').trim();
-                
-                // Glass Card classes
-                const baseClass = 'p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 min-w-0 ';
-                const emptyClass = baseClass + 'border-red-300 bg-red-50/75';
-                const filledClass = baseClass + 'border-white/80 bg-white/80 shadow-md';
-
                 formGroup.id = `fieldCard-${idx}`;
-                formGroup.className = currentValue === '' ? emptyClass : filledClass;
-                if (inputValuesMap[idx] === undefined) inputValuesMap[idx] = '';
+                formGroup.className = `p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 ${currentValue === '' ? 'border-red-300 bg-red-50/75' : 'border-white/80 bg-white/80'}`;
 
-                // Chips helper
-                const isDateVar = m.label.toLowerCase().includes('วันที่') || m.label.toLowerCase().includes('date');
-                const isTimeVar = m.label.toLowerCase().includes('เวลา') || m.label.toLowerCase().includes('time');
-                const isMflowClass = m.label.toLowerCase().includes('คลาสรถ') || m.label.toLowerCase().includes('m-flow') || m.label.toLowerCase().includes('m flow');
-
-                const btnClass = 'text-[9px] font-bold bg-white hover:bg-slate-50 text-slate-600 px-2 py-1 rounded-full shadow-sm border border-black/5 transition-all';
-                let helpersMarkup = '';
-                
-                if (isDateVar) {
-                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="fillTodayDate(${idx})" class="${btnClass}">วันไทย</button><button type="button" onclick="fillGregorianDate(${idx})" class="${btnClass}">ค.ศ.</button></div>`;
-                } else if (isTimeVar) {
-                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="fillCurrentTime(${idx})" class="${btnClass}">ตอนนี้</button></div>`;
-                } else if (isMflowClass) {
-                    helpersMarkup = `<div class="flex gap-1.5 shrink-0"><button type="button" onclick="setValue(${idx}, '4 ล้อ (C1)')" class="${btnClass}">C1</button><button type="button" onclick="setValue(${idx}, '6 ล้อ (C2)')" class="${btnClass}">C2</button><button type="button" onclick="setValue(${idx}, 'มากกว่า 6 ล้อ (C3)')" class="${btnClass}">C3</button></div>`;
+                // ปุ่มตัวช่วยด่วน (Date / Time / M-Flow C1-C3)
+                let helpers = '';
+                const lbl = m.label.toLowerCase();
+                if (lbl.includes('วันที่') || lbl.includes('date')) {
+                    helpers = `<button type="button" onclick="setVal(${idx}, 'date')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">วันไทย</button>`;
+                } else if (lbl.includes('เวลา') || lbl.includes('time')) {
+                    helpers = `<button type="button" onclick="setVal(${idx}, 'time')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">ตอนนี้</button>`;
+                } else if (lbl.includes('คลาสรถ') || lbl.includes('m-flow')) {
+                    helpers = `<button type="button" onclick="setVal(${idx}, 'C1')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C1</button> <button type="button" onclick="setVal(${idx}, 'C2')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C2</button> <button type="button" onclick="setVal(${idx}, 'C3')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C3</button>`;
                 }
 
                 formGroup.innerHTML = `
-                    <div class="flex justify-between items-center gap-2 px-1">
+                    <div class="flex justify-between items-center px-1">
                         <label class="text-[11px] font-bold text-slate-800 flex items-center gap-1.5">
-                            <span class="w-2 h-2 rounded-full ${currentValue === '' ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.7)]' : 'bg-apple-green shadow-[0_0_5px_rgba(52,199,89,0.7)]'}"></span>
-                            ${m.label}
+                            <span class="w-2 h-2 rounded-full ${currentValue === '' ? 'bg-red-500' : 'bg-apple-green'}"></span> ${m.label}
                         </label>
-                        ${helpersMarkup}
+                        <div class="flex gap-1">${helpers}</div>
                     </div>
-                    <input type="text" data-index="${idx}" value="${inputValuesMap[idx]}" oninput="updateValueMap(${idx}, this.value)" placeholder="กรอกข้อมูล..." class="w-full px-3 py-2 bg-white/95 border border-slate-300 rounded-xl focus:outline-none focus:bg-white focus:ring-2 focus:ring-apple-blue/50 focus:border-apple-blue transition-all shadow-inner text-xs sm:text-sm text-slate-900 font-medium placeholder:text-slate-400">
+                    <input type="text" data-index="${idx}" value="${currentValue}" oninput="updateInputVal(${idx}, this.value)" placeholder="กรอกข้อมูล..." class="w-full px-3 py-2 bg-white/95 border border-slate-300 rounded-xl text-xs sm:text-sm font-medium">
                 `;
                 container.appendChild(formGroup);
             });
             computeOutput();
         }
 
-        function updateValueMap(idx, value) {
-            inputValuesMap[idx] = value;
-            const card = document.getElementById(`fieldCard-${idx}`);
-            if (card) {
-                const baseClass = 'p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 min-w-0 ';
-                card.className = value.trim() === '' ? baseClass + 'border-red-300 bg-red-50/75' : baseClass + 'border-white/80 bg-white/80 shadow-md';
-                
-                // Update indicator dot
-                const dot = card.querySelector('label span');
-                if (dot) {
-                    dot.className = `w-2 h-2 rounded-full ${value.trim() === '' ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.7)]' : 'bg-apple-green shadow-[0_0_5px_rgba(52,199,89,0.7)]'}`;
-                }
-            }
-            computeOutput();
+        function setVal(idx, type) {
+            const now = new Date();
+            let val = '';
+            if (type === 'date') val = `${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear() + 543}`;
+            else if (type === 'time') val = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            else val = type + (type === 'C1' ? ' 4 ล้อ' : type === 'C2' ? ' 6 ล้อ' : ' มากกว่า 6 ล้อ');
+            
+            const target = document.querySelector(`[data-index="${idx}"]`);
+            if (target) { target.value = val; updateInputVal(idx, val); }
         }
 
-        function escapeHTMLForDisplay(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+        // อัปเดตค่าและคงไว้บน Cloud ทันทีตามเงื่อนไขข้อ 3
+        function updateInputVal(idx, val) {
+            const mapKey = getCurrentKey(idx);
+            inputValuesMap[mapKey] = val;
+            
+            const card = document.getElementById(`fieldCard-${idx}`);
+            if (card) {
+                card.className = `p-3 rounded-2xl border backdrop-blur-xl shadow-sm transition-all space-y-2 ${val.trim() === '' ? 'border-red-300 bg-red-50/75' : 'border-white/80 bg-white/80'}`;
+                const dot = card.querySelector('label span');
+                if (dot) dot.className = `w-2 h-2 rounded-full ${val.trim() === '' ? 'bg-red-500' : 'bg-apple-green'}`;
+            }
+            computeOutput();
+            saveToCloudSilent(); // ซิงค์ค่าเก็บไว้บนคลาวด์แบบอัตโนมัติ
+        }
 
         function computeOutput() {
             const selected = templates.find(t => t.id === selectedTemplateId);
@@ -713,226 +563,171 @@
             let originalContent = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
             const matches = getTemplateMatches(originalContent);
 
-            let finalOutputText = "", lastIndex = 0;
+            let plainText = "", htmlText = "", lastIdx = 0;
             matches.forEach((m, idx) => {
-                finalOutputText += originalContent.substring(lastIndex, m.startIndex);
-                finalOutputText += (inputValuesMap[idx] !== undefined && inputValuesMap[idx] !== '') ? inputValuesMap[idx] : `[รอระบุ: ${m.label}]`;
-                lastIndex = m.startIndex + m.length;
-            });
-            finalOutputText += originalContent.substring(lastIndex);
-
-            let finalOutputHTML = "", lastIndexHTML = 0;
-            matches.forEach((m, idx) => {
-                finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML, m.startIndex));
-                const userVal = inputValuesMap[idx] || '';
+                const mapKey = getCurrentKey(idx);
+                const userVal = inputValuesMap[mapKey] || '';
+                
+                plainText += originalContent.substring(lastIdx, m.startIndex) + (userVal !== '' ? userVal : `[รอระบุ: ${m.label}]`);
+                htmlText += escapeHTML(originalContent.substring(lastIdx, m.startIndex));
+                
                 if (userVal !== '') {
-                    finalOutputHTML += `<span class="text-apple-blue font-bold bg-blue-50 px-1 rounded-md border border-blue-100">${escapeHTMLForDisplay(userVal)}</span>`;
+                    htmlText += `<span class="text-apple-blue font-bold bg-blue-50 px-1 rounded-md border border-blue-100">${escapeHTML(userVal)}</span>`;
                 } else {
-                    finalOutputHTML += `<span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-md border border-red-200 inline-flex items-center gap-1 text-[11px] animate-pulse"><i class="fa-solid fa-asterisk text-[9px]"></i>รอระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
+                    htmlText += `<span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-md border border-red-200 text-[11px]"><i class="fa-solid fa-asterisk text-[9px]"></i>รอระบุ: ${escapeHTML(m.label)}</span>`;
                 }
-                lastIndexHTML = m.startIndex + m.length;
+                lastIdx = m.startIndex + m.length;
             });
-            finalOutputHTML += escapeHTMLForDisplay(originalContent.substring(lastIndexHTML));
+            plainText += originalContent.substring(lastIdx);
+            htmlText += escapeHTML(originalContent.substring(lastIdx));
 
-            updateFinalOutput(finalOutputText, finalOutputHTML);
-        }
-
-        function updateFinalOutput(plainText, htmlText) {
             document.getElementById('outputDisplay').value = plainText;
             document.getElementById('outputDisplayHTML').innerHTML = htmlText;
         }
 
-        function clearAllFields() {
-            inputValuesMap = {};
+        function escapeHTML(str) { return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+        // ล้างค่าเฉพาะเทมเพลต/ช่วงเวลานั้นๆ
+        function clearCurrentTemplateFields() {
             const selected = templates.find(t => t.id === selectedTemplateId);
-            if (selected) {
-                let content = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
-                parseTemplateVariables(content);
-            }
+            if (!selected) return;
+            const matches = getTemplateMatches(selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content);
+            matches.forEach((m, idx) => {
+                delete inputValuesMap[getCurrentKey(idx)];
+            });
+            saveToCloudSilent();
+            loadTemplate(selectedTemplateId);
+            showToast('delete', 'ล้างค่าในเทมเพลตนี้แล้ว');
         }
 
-        // Segmented Control Tabs toggle logic
+        // ระบบสำรองข้อมูลขึ้น Cloud & Export JSON (ข้อ 2)
+        async function backupToCloud() {
+            await saveToCloud();
+            // ส่งออกเป็นไฟล์สำรองลงเครื่องด้วย
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ templates, inputValuesMap }, null, 2));
+            const a = document.createElement('a'); a.href = dataStr; a.download = `mflow_backup_${Date.now()}.json`;
+            document.body.appendChild(a); a.click(); a.remove();
+        }
+
+        // นำเข้าข้อมูล (ดึงจาก Cloud หรืออัปโหลดไฟล์) (ข้อ 2)
+        async function triggerImport() {
+            try {
+                const doc = await CLOUD_DOC_REF.get();
+                if (doc.exists && confirm("พบข้อมูลสำรองบน Cloud! ต้องการโหลดข้อมูลล่าสุดจาก Cloud หรือไม่? (กด Cancel เพื่อเลือกไฟล์ JSON จากเครื่อง)")) {
+                    const cloudData = doc.data();
+                    templates = cloudData.templates || defaultTemplates;
+                    inputValuesMap = cloudData.inputValuesMap || {};
+                    localStorage.setItem('routine_templates_v4', JSON.stringify(templates));
+                    localStorage.setItem('routine_inputs_v4', JSON.stringify(inputValuesMap));
+                    selectedTemplateId = templates[0]?.id || "";
+                    renderTopicsList();
+                    loadTemplate(selectedTemplateId);
+                    showToast('save', 'ดึงข้อมูลจาก Cloud สำเร็จ');
+                    return;
+                }
+            } catch (e) {}
+            document.getElementById('importFileInput').click();
+        }
+
+        function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.templates) {
+                        templates = imported.templates;
+                        inputValuesMap = imported.inputValuesMap || {};
+                    } else if (Array.isArray(imported)) {
+                        templates = imported;
+                    }
+                    saveToCloud();
+                    selectedTemplateId = templates[0].id;
+                    renderTopicsList();
+                    loadTemplate(selectedTemplateId);
+                    showToast('save', 'นำเข้าข้อมูลไฟล์สำเร็จ');
+                } catch (err) { showToast('error', 'ไฟล์ JSON ไม่ถูกต้อง'); }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Copy to clipboard และคงค่าไว้จนกว่าจะกดล้าง
+        function copyToClipboard() {
+            const text = document.getElementById('outputDisplay').value;
+            navigator.clipboard.writeText(text).then(() => {
+                const feedback = document.getElementById('copyFeedback');
+                feedback.classList.remove('opacity-0');
+                feedback.classList.add('opacity-100');
+                showToast('copy', 'คัดลอกรายงานเรียบร้อย (ค่าในฟอร์มยังคงอยู่)');
+                setTimeout(() => feedback.classList.replace('opacity-100', 'opacity-0'), 2500);
+            });
+        }
+
         function switchTab(tab) {
             currentTab = tab;
-            const formBtn = document.getElementById('tabFormBtn');
-            const rawBtn = document.getElementById('tabRawBtn');
-            
-            const activeStyle = 'px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5';
-            const inactiveStyle = 'px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 hover:text-apple-darkText transition-all flex items-center gap-1.5';
-
-            if (tab === 'form') {
-                formBtn.className = activeStyle;
-                rawBtn.className = inactiveStyle;
-                document.getElementById('dynamicFormPane').classList.remove('hidden');
-                document.getElementById('rawEditPane').classList.add('hidden');
-                
-                const selected = templates.find(t => t.id === selectedTemplateId);
-                if (selected) {
-                    let content = selected.subPeriods ? selected.subPeriods[selected.activeSubPeriodIndex || 0].content : selected.content;
-                    parseTemplateVariables(content);
-                }
-            } else {
-                rawBtn.className = activeStyle;
-                formBtn.className = inactiveStyle;
-                document.getElementById('rawEditPane').classList.remove('hidden');
-                document.getElementById('dynamicFormPane').classList.add('hidden');
-            }
-        }
-
-        function onRawTemplateChange() {
-            const currentRawText = document.getElementById('rawTextarea').value;
-            const matches = getTemplateMatches(currentRawText);
-
-            let finalOutputText = "", lastIndex = 0;
-            matches.forEach((m, idx) => {
-                finalOutputText += currentRawText.substring(lastIndex, m.startIndex);
-                finalOutputText += (inputValuesMap[idx] || '') !== '' ? inputValuesMap[idx] : `[รอระบุ: ${m.label}]`;
-                lastIndex = m.startIndex + m.length;
-            });
-            finalOutputText += currentRawText.substring(lastIndex);
-            
-            let finalOutputHTML = "", lastIndexHTML = 0;
-            matches.forEach((m, idx) => {
-                finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML, m.startIndex));
-                const userVal = inputValuesMap[idx] || '';
-                if (userVal !== '') {
-                    finalOutputHTML += `<span class="text-apple-blue font-bold bg-blue-50 px-1 rounded-md border border-blue-100">${escapeHTMLForDisplay(userVal)}</span>`;
-                } else {
-                    finalOutputHTML += `<span class="bg-red-50 text-red-500 font-bold px-1.5 py-0.5 rounded-md border border-red-200 inline-flex items-center gap-1 text-[11px]"><i class="fa-solid fa-asterisk text-[9px]"></i>รอระบุ: ${escapeHTMLForDisplay(m.label)}</span>`;
-                }
-                lastIndexHTML = m.startIndex + m.length;
-            });
-            finalOutputHTML += escapeHTMLForDisplay(currentRawText.substring(lastIndexHTML));
-
-            updateFinalOutput(finalOutputText, finalOutputHTML);
+            document.getElementById('tabFormBtn').className = tab === 'form' ? 'px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5' : 'px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 transition-all flex items-center gap-1.5';
+            document.getElementById('tabRawBtn').className = tab === 'raw' ? 'px-4 py-1.5 text-xs font-bold rounded-lg bg-white text-apple-darkText shadow-sm transition-all flex items-center gap-1.5' : 'px-4 py-1.5 text-xs font-medium rounded-lg text-slate-700 transition-all flex items-center gap-1.5';
+            document.getElementById('dynamicFormPane').classList.toggle('hidden', tab !== 'form');
+            document.getElementById('rawEditPane').classList.toggle('hidden', tab !== 'raw');
+            if(tab === 'form') loadTemplate(selectedTemplateId);
         }
 
         function saveTemplateChanges() {
-            const currentRawText = document.getElementById('rawTextarea').value.trim();
-            if (!currentRawText) { showToast('error', 'ข้อความเทมเพลตว่างเปล่า'); return; }
-
-            const index = templates.findIndex(t => t.id === selectedTemplateId);
-            if (index !== -1) {
-                if (templates[index].subPeriods) templates[index].subPeriods[templates[index].activeSubPeriodIndex || 0].content = currentRawText;
-                else templates[index].content = currentRawText;
-
-                localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-                showToast('save', 'บันทึกโครงร่างสำเร็จ');
-                parseTemplateVariables(currentRawText);
+            const text = document.getElementById('rawTextarea').value.trim();
+            const idx = templates.findIndex(t => t.id === selectedTemplateId);
+            if (idx !== -1) {
+                if (templates[idx].subPeriods) templates[idx].subPeriods[templates[idx].activeSubPeriodIndex || 0].content = text;
+                else templates[idx].content = text;
+                saveToCloud();
+                parseTemplateVariables(text);
                 switchTab('form');
             }
         }
 
-        function openNewTemplateModal() { document.getElementById('newTemplateModal').classList.remove('hidden'); document.getElementById('newTitleInput').focus(); }
-        function closeNewTemplateModal() { document.getElementById('newTemplateModal').classList.add('hidden'); document.getElementById('newTitleInput').value = ''; document.getElementById('newTemplateContent').value = ''; }
+        function openNewTemplateModal() { document.getElementById('newTemplateModal').classList.remove('hidden'); }
+        function closeNewTemplateModal() { document.getElementById('newTemplateModal').classList.add('hidden'); }
 
-        function handleCreateTemplate(event) {
+        async function handleCreateTemplate(event) {
             event.preventDefault();
             const title = document.getElementById('newTitleInput').value.trim();
             const content = document.getElementById('newTemplateContent').value.trim();
-            if (!title || !content) return;
+            if(!title || !content) return;
 
             const id = 'custom-' + Date.now();
             templates.push({ id, title, content });
-            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-
+            await saveToCloud();
             closeNewTemplateModal();
             selectedTemplateId = id;
-            localStorage.setItem('routine_selected_template_id_v3', id);
-            
-            inputValuesMap = {}; 
-            renderTopicsList(); loadTemplate(id); switchTab('form');
+            renderTopicsList();
+            loadTemplate(id);
             showToast('save', 'สร้างหัวข้อสำเร็จ');
         }
 
-        function deleteCurrentTemplate() {
+        async function deleteCurrentTemplate() {
             if (templates.length <= 1) { showToast('error', 'ไม่สามารถลบหัวข้อสุดท้ายได้'); return; }
-            document.getElementById('deleteConfirmModal').classList.remove('hidden');
-            document.getElementById('confirmDeleteBtn').onclick = function() {
+            if (confirm("ต้องการลบหัวข้อนี้ถาวร?")) {
                 templates = templates.filter(t => t.id !== selectedTemplateId);
-                localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
                 selectedTemplateId = templates[0].id;
-                localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
-                inputValuesMap = {};
-                renderTopicsList(); loadTemplate(selectedTemplateId); switchTab('form');
-                closeDeleteConfirmModal(); showToast('delete', 'ลบหัวข้อสำเร็จ');
-            };
-        }
-        function closeDeleteConfirmModal() { document.getElementById('deleteConfirmModal').classList.add('hidden'); }
-
-        function copyToClipboard() {
-            const textToCopy = document.getElementById('outputDisplay').value;
-            navigator.clipboard.writeText(textToCopy).then(() => triggerCopyAnimation()).catch(() => fallbackCopyHelper(textToCopy));
+                await saveToCloud();
+                renderTopicsList();
+                loadTemplate(selectedTemplateId);
+                showToast('delete', 'ลบหัวข้อสำเร็จ');
+            }
         }
 
-        function fallbackCopyHelper(text) {
-            const temp = document.createElement("textarea");
-            temp.value = text; temp.style.position = "fixed"; temp.style.left = "-9999px"; temp.style.top = "0";
-            document.body.appendChild(temp); temp.focus(); temp.select();
-            try { if (document.execCommand('copy')) triggerCopyAnimation(); } catch (err) {}
-            document.body.removeChild(temp);
-        }
-
-        function triggerCopyAnimation() {
-            const feedback = document.getElementById('copyFeedback');
-            feedback.classList.remove('opacity-0'); feedback.classList.add('opacity-100');
-            showToast('copy', 'คัดลอกลงคลิปบอร์ดแล้ว');
-            setTimeout(() => { feedback.classList.remove('opacity-100'); feedback.classList.add('opacity-0'); }, 2500);
-        }
-
-        function exportAllTemplates() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(templates, null, 2));
-            const a = document.createElement('a'); a.href = dataStr; a.download = "daily_report_backup.json";
-            document.body.appendChild(a); a.click(); a.remove();
-            showToast('save', 'ส่งออกข้อมูลเรียบร้อย');
-        }
-
-        function triggerImport() { document.getElementById('importFileInput').click(); }
-        function handleImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const isTextFile = file.name.toLowerCase().endsWith('.txt');
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                if (isTextFile) {
-                    document.getElementById('newTitleInput').value = file.name.replace(/\.[^/.]+$/, "");
-                    document.getElementById('newTemplateContent').value = e.target.result;
-                    document.getElementById('newTemplateModal').classList.remove('hidden');
-                } else {
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        if (Array.isArray(imported) && imported.length > 0 && imported[0].title) {
-                            templates = imported;
-                            localStorage.setItem('routine_templates_v3', JSON.stringify(templates));
-                            selectedTemplateId = templates[0].id;
-                            localStorage.setItem('routine_selected_template_id_v3', selectedTemplateId);
-                            inputValuesMap = {};
-                            renderTopicsList(); loadTemplate(selectedTemplateId);
-                            showToast('save', 'นำเข้าข้อมูลเรียบร้อย');
-                        } else throw new Error();
-                    } catch (err) { showToast('error', 'ไฟล์ไม่ถูกต้อง'); }
-                }
-            };
-            reader.readAsText(file); event.target.value = '';
-        }
-
-        // Apple Dynamic Island style notification
-        function showToast(type, message) {
+        function showToast(type, msg) {
             const toast = document.getElementById('toastNotification');
-            const iconContainer = document.getElementById('toastIconContainer');
-            document.getElementById('toastMessage').innerText = message;
-            
-            let iconMarkup = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
-            if (type === 'copy') iconMarkup = '<i class="fa-solid fa-clone text-apple-green"></i>';
-            else if (type === 'save') iconMarkup = '<i class="fa-solid fa-cloud-arrow-up text-apple-blue"></i>';
-            else if (type === 'delete') iconMarkup = '<i class="fa-solid fa-trash-alt text-red-400"></i>';
-            else if (type === 'error') iconMarkup = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
-
-            iconContainer.innerHTML = iconMarkup;
+            document.getElementById('toastMessage').innerText = msg;
+            let icon = '<i class="fa-solid fa-circle-info text-blue-400"></i>';
+            if (type === 'copy') icon = '<i class="fa-solid fa-clone text-apple-green"></i>';
+            if (type === 'save') icon = '<i class="fa-solid fa-cloud-arrow-up text-apple-blue"></i>';
+            if (type === 'delete') icon = '<i class="fa-solid fa-trash-alt text-red-400"></i>';
+            document.getElementById('toastIconContainer').innerHTML = icon;
 
             toast.classList.remove('-translate-y-20', 'opacity-0');
             toast.classList.add('translate-y-0', 'opacity-100');
-
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('-translate-y-20', 'opacity-0');
