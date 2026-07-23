@@ -73,7 +73,7 @@
         <div class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] bg-purple-600/40 rounded-full filter blur-[90px] animate-pulse"></div>
     </div>
 
-    <!-- PROFILE SELECTION SCREEN (Modal / Overlay เริ่มต้น) -->
+    <!-- PROFILE SELECTION SCREEN -->
     <div id="profileSelectionOverlay" class="fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-xl flex items-center justify-center p-4">
         <div class="glass-panel w-full max-w-md rounded-[32px] p-8 shadow-2xl flex flex-col items-center text-center space-y-6">
             <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 to-apple-blue text-white flex items-center justify-center shadow-lg text-2xl">
@@ -125,7 +125,7 @@
                     </button>
                     <button onclick="logoutProfile()" class="px-2.5 h-8 flex items-center justify-center gap-1 text-[11px] font-semibold text-red-500 hover:bg-red-50 rounded-full transition-all" title="ลงชื่อออกจากโปรไฟล์นี้">
                         <i class="fa-solid fa-right-from-bracket"></i>
-                        <span class="hidden sm:inline">ลงชื่อออก</span>
+                        <span class="hidden sm:inline">สลับโปรไฟล์</span>
                     </button>
                 </div>
 
@@ -315,33 +315,9 @@
                     <input type="text" id="newProfileNameInput" required placeholder="เช่น พี่สมชาย, กะเช้า ฯลฯ" class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">รหัสผ่านสำหรับเข้าโปรไฟล์ (ไม่บังคับ)</label>
-                    <input type="password" id="newProfilePasswordInput" placeholder="เว้นว่างไว้หากไม่ต้องการตั้งรหัสผ่าน" class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
-                    <p class="text-[10px] text-slate-400 mt-1">* หากตั้งรหัสผ่าน ระบบจะขอให้ยืนยันรหัสผ่านก่อนเข้าใช้งาน</p>
-                </div>
-
                 <div class="flex justify-end gap-2 pt-2">
                     <button type="button" onclick="closeCreateProfileModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold">ยกเลิก</button>
                     <button type="submit" class="px-6 py-2.5 bg-apple-blue text-white rounded-full text-sm font-bold shadow-md">สร้างโปรไฟล์</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Modal กรอกรหัสผ่านสำหรับโปรไฟล์ที่มีรหัส -->
-    <div id="passwordPromptModal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-md flex justify-center items-center p-4">
-        <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white p-6 flex flex-col items-center text-center">
-            <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xl mb-3">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <h3 class="font-bold text-apple-darkText text-base mb-1">ยืนยันรหัสผ่าน</h3>
-            <p id="passwordPromptProfileName" class="text-xs text-slate-500 mb-4">โปรไฟล์นี้ถูกล็อกไว้ด้วยรหัสผ่าน</p>
-            <form onsubmit="handleVerifyPassword(event)" class="w-full space-y-3">
-                <input type="password" id="profilePasswordInput" required placeholder="กรอกรหัสผ่าน..." class="w-full px-4 py-3 rounded-2xl glass-input text-sm text-center">
-                <div class="flex gap-2 pt-1">
-                    <button type="button" onclick="closePasswordPromptModal()" class="flex-1 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-2xl text-xs font-semibold">ยกเลิก</button>
-                    <button type="submit" class="flex-1 py-2.5 bg-apple-blue text-white rounded-2xl text-xs font-bold shadow-md">เข้าใช้งาน</button>
                 </div>
             </form>
         </div>
@@ -371,7 +347,7 @@
         }
         const db = firebase.firestore();
 
-        // Default Templates Setup (สำหรับโปรไฟล์ใหม่เริ่มต้น)
+        // Default Templates Setup
         const defaultTemplates = [
             {
                 id: "sla-8-min",
@@ -396,9 +372,7 @@
         let inputValuesMap = {}; 
         let selectedTemplateId = "";
         let currentTab = 'form';
-        
-        let tempAvatarDataUrl = ""; // เก็บ Base64 สำหรับอัปโหลดรูป
-        let selectedProfileObj = null; // เก็บข้อมูลโปรไฟล์ชั่วคราวตอนเช็กรหัสผ่าน
+        let tempAvatarDataUrl = "";
 
         window.onload = async function() {
             updateClock();
@@ -406,7 +380,6 @@
             await checkAndInitProfiles();
         };
 
-        // ตรวจสอบและโหลดรายชื่อโปรไฟล์จาก Cloud
         async function checkAndInitProfiles() {
             try {
                 const metaDoc = await db.collection("mflow_reports").doc("system_profiles_meta").get();
@@ -416,7 +389,7 @@
                 }
 
                 if (profiles.length === 0) {
-                    profiles = [{ id: "default_admin", name: "แอดมินหลัก", avatar: "", password: "" }];
+                    profiles = [{ id: "default_admin", name: "แอดมินหลัก", avatar: "" }];
                     await db.collection("mflow_reports").doc("system_profiles_meta").set({ profiles });
                     
                     await db.collection("mflow_reports").doc("profile_default_admin").set({
@@ -464,29 +437,21 @@
             container.innerHTML = '';
             profiles.forEach(p => {
                 const isSelected = p.id === currentProfileId;
-                const hasPassword = p.password && p.password.trim() !== '';
 
                 const btn = document.createElement('button');
                 btn.className = `w-full p-3.5 rounded-2xl flex items-center justify-between transition-all border ${
                     isSelected ? 'bg-blue-50 border-blue-300 text-apple-blue font-bold shadow-sm' : 'bg-white/80 border-white/80 text-slate-700 hover:bg-white'
                 }`;
-                btn.onclick = () => requestProfileAccess(p);
+                btn.onclick = () => selectProfile(p.id, p.name, p.avatar);
 
                 const avatarHtml = p.avatar 
                     ? `<img src="${p.avatar}" class="w-9 h-9 rounded-xl object-cover shrink-0 shadow-sm">`
                     : `<div class="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-600 shrink-0"><i class="fa-solid fa-user text-sm"></i></div>`;
 
-                const lockIconHtml = hasPassword 
-                    ? `<span class="text-amber-500 text-xs ml-1" title="ล็อกรหัสผ่าน"><i class="fa-solid fa-lock"></i></span>` 
-                    : '';
-
                 btn.innerHTML = `
                     <div class="flex items-center gap-3 overflow-hidden">
                         ${avatarHtml}
-                        <div class="flex items-center gap-1.5 truncate">
-                            <span class="text-sm truncate">${p.name}</span>
-                            ${lockIconHtml}
-                        </div>
+                        <span class="text-sm truncate">${p.name}</span>
                     </div>
                     <span class="text-xs font-semibold px-3 py-1 rounded-full shrink-0 ${isSelected ? 'bg-apple-blue text-white' : 'bg-slate-100 text-slate-500'}">
                         ${isSelected ? 'ใช้งานอยู่' : 'เข้าใช้งาน'}
@@ -494,37 +459,6 @@
                 `;
                 container.appendChild(btn);
             });
-        }
-
-        function requestProfileAccess(p) {
-            if (p.password && p.password.trim() !== '') {
-                selectedProfileObj = p;
-                document.getElementById('passwordPromptProfileName').innerText = `โปรไฟล์: ${p.name}`;
-                document.getElementById('profilePasswordInput').value = '';
-                document.getElementById('passwordPromptModal').classList.remove('hidden');
-                setTimeout(() => document.getElementById('profilePasswordInput').focus(), 100);
-            } else {
-                selectProfile(p.id, p.name, p.avatar);
-            }
-        }
-
-        function closePasswordPromptModal() {
-            document.getElementById('passwordPromptModal').classList.add('hidden');
-            selectedProfileObj = null;
-        }
-
-        function handleVerifyPassword(event) {
-            event.preventDefault();
-            if (!selectedProfileObj) return;
-            const inputPwd = document.getElementById('profilePasswordInput').value;
-            if (inputPwd === selectedProfileObj.password) {
-                closePasswordPromptModal();
-                selectProfile(selectedProfileObj.id, selectedProfileObj.name, selectedProfileObj.avatar);
-            } else {
-                showToast('error', 'รหัสผ่านไม่ถูกต้อง');
-                document.getElementById('profilePasswordInput').value = '';
-                document.getElementById('profilePasswordInput').focus();
-            }
         }
 
         async function selectProfile(id, name, avatar = '') {
@@ -550,7 +484,6 @@
             }
         }
 
-        // ลงชื่อออกจากโปรไฟล์ปัจจุบัน (Soft Reset)
         function logoutProfile() {
             currentProfileId = "";
             currentProfileName = "";
@@ -559,7 +492,6 @@
             document.getElementById('currentProfileNameBadge').innerText = "โปรไฟล์: ยังไม่ได้เลือก";
             document.getElementById('headerProfileAvatar').innerHTML = `<i class="fa-solid fa-user"></i>`;
             showProfileSelector();
-            showToast('delete', 'ลงชื่อออกจากระบบเรียบร้อย');
         }
 
         function openCreateProfileModal() {
@@ -567,7 +499,6 @@
             document.getElementById('avatarPreview').classList.add('hidden');
             document.getElementById('avatarPlaceholder').classList.remove('hidden');
             document.getElementById('newProfileNameInput').value = '';
-            document.getElementById('newProfilePasswordInput').value = '';
             document.getElementById('createProfileModal').classList.remove('hidden');
         }
 
@@ -592,7 +523,6 @@
         async function handleCreateProfile(event) {
             event.preventDefault();
             const name = document.getElementById('newProfileNameInput').value.trim();
-            const password = document.getElementById('newProfilePasswordInput').value;
             if (!name) return;
 
             const newId = 'profile_' + Date.now();
@@ -604,8 +534,7 @@
                 profiles.push({ 
                     id: newId, 
                     name: name,
-                    avatar: tempAvatarDataUrl || '',
-                    password: password || ''
+                    avatar: tempAvatarDataUrl || ''
                 });
                 
                 await metaRef.set({ profiles });
@@ -623,12 +552,10 @@
             }
         }
 
-        // ดึง Reference เอกสาร Cloud แยกตามโปรไฟล์ปัจจุบัน
         function getCloudDocRef() {
             return db.collection("mflow_reports").doc(`profile_${currentProfileId}`);
         }
 
-        // โหลดข้อมูล Template และ Input ตามโปรไฟล์ปัจจุบันจาก Cloud หรือ LocalStorage
         async function loadDataForCurrentProfile() {
             const cloudRef = getCloudDocRef();
             try {
