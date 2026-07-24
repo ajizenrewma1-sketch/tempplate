@@ -321,6 +321,43 @@
         </div>
     </div>
 
+    <!-- Modal แก้ไขโปรไฟล์ -->
+    <div id="editProfileModal" class="hidden fixed inset-0 z-[110] bg-black/30 backdrop-blur-md flex justify-center items-center p-4">
+        <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-md border border-white p-6 flex flex-col max-h-[90vh] overflow-y-auto">
+            <h3 class="font-bold text-apple-darkText flex items-center gap-2 mb-4">
+                <div class="w-8 h-8 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-user-pen text-sm"></i></div>
+                แก้ไขโปรไฟล์
+            </h3>
+            <form onsubmit="handleUpdateProfile(event)" class="space-y-4">
+                <input type="hidden" id="editProfileIdInput">
+                <div class="flex flex-col items-center justify-center gap-2">
+                    <div class="relative w-20 h-20 rounded-full border-2 border-slate-200 overflow-hidden bg-slate-100 flex items-center justify-center group cursor-pointer" onclick="document.getElementById('editProfileAvatarInput').click()">
+                        <img id="editAvatarPreview" class="w-full h-full object-cover hidden" alt="Avatar">
+                        <div id="editAvatarPlaceholder" class="flex flex-col items-center text-slate-400">
+                            <i class="fa-solid fa-camera text-xl"></i>
+                            <span class="text-[10px] mt-1 font-semibold">เลือกรูป</span>
+                        </div>
+                        <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-bold">
+                            เปลี่ยนรูป
+                        </div>
+                    </div>
+                    <input type="file" id="editProfileAvatarInput" accept="image/*" class="hidden" onchange="handleEditAvatarSelect(event)">
+                    <span class="text-[11px] text-slate-500">คลิกเพื่อเปลี่ยนรูปโปรไฟล์</span>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">ชื่อโปรไฟล์ / ชื่อผู้ใช้งาน <span class="text-red-500">*</span></label>
+                    <input type="text" id="editProfileNameInput" required class="w-full px-4 py-3 rounded-2xl glass-input text-sm">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditProfileModal()" class="px-5 py-2.5 bg-black/5 hover:bg-black/10 text-slate-600 rounded-full text-sm font-semibold">ยกเลิก</button>
+                    <button type="submit" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-full text-sm font-bold shadow-md">บันทึกการแก้ไข</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Modal ยืนยันการลบโปรไฟล์ -->
     <div id="deleteProfileModal" class="hidden fixed inset-0 z-[120] bg-black/40 backdrop-blur-md flex justify-center items-center p-4">
         <div class="bg-white/95 backdrop-blur-2xl rounded-[32px] shadow-2xl w-full max-w-sm border border-white p-6 flex flex-col items-center text-center">
@@ -387,7 +424,8 @@
         let selectedTemplateId = "";
         let currentTab = 'form';
         let tempAvatarDataUrl = "";
-        let profileToDeleteId = null; // ตัวแปรเก็บ ID โปรไฟล์ที่กำลังจะลบ
+        let tempEditAvatarDataUrl = ""; // ตัวแปรสำหรับเก็บรูปตอนแก้ไข
+        let profileToDeleteId = null;
 
         window.onload = async function() {
             updateClock();
@@ -475,20 +513,115 @@
                     </div>
                 `;
 
+                // กลุ่มปุ่มจัดการ (แก้ไข / ลบ)
+                const actionGroup = document.createElement('div');
+                actionGroup.className = "flex items-center gap-1 shrink-0";
+
+                // ปุ่มแก้ไขโปรไฟล์
+                const editBtn = document.createElement('button');
+                editBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-amber-500 hover:bg-amber-50 transition-all";
+                editBtn.title = "แก้ไขโปรไฟล์";
+                editBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    openEditProfileModal(p.id, p.name, p.avatar);
+                };
+                editBtn.innerHTML = '<i class="fa-solid fa-pen text-sm"></i>';
+
                 // ปุ่มลบโปรไฟล์
                 const deleteBtn = document.createElement('button');
-                deleteBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all shrink-0";
+                deleteBtn.className = "w-9 h-9 flex items-center justify-center rounded-xl text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all";
                 deleteBtn.title = "ลบโปรไฟล์";
                 deleteBtn.onclick = (e) => {
-                    e.stopPropagation(); // ป้องกันการเผลอกดเข้าโปรไฟล์
+                    e.stopPropagation();
                     openDeleteProfileConfirm(p.id, p.name);
                 };
                 deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can text-sm"></i>';
 
+                actionGroup.appendChild(editBtn);
+                actionGroup.appendChild(deleteBtn);
+
                 rowDiv.appendChild(selectBtn);
-                rowDiv.appendChild(deleteBtn);
+                rowDiv.appendChild(actionGroup);
                 container.appendChild(rowDiv);
             });
+        }
+
+        // ==========================================
+        // PROFILE EDIT & UPDATE LOGIC
+        // ==========================================
+        function openEditProfileModal(id, name, avatar) {
+            document.getElementById('editProfileIdInput').value = id;
+            document.getElementById('editProfileNameInput').value = name;
+            tempEditAvatarDataUrl = avatar || "";
+
+            const preview = document.getElementById('editAvatarPreview');
+            const placeholder = document.getElementById('editAvatarPlaceholder');
+
+            if (tempEditAvatarDataUrl) {
+                preview.src = tempEditAvatarDataUrl;
+                preview.classList.remove('hidden');
+                placeholder.classList.add('hidden');
+            } else {
+                preview.src = "";
+                preview.classList.add('hidden');
+                placeholder.classList.remove('hidden');
+            }
+
+            document.getElementById('editProfileModal').classList.remove('hidden');
+        }
+
+        function closeEditProfileModal() {
+            document.getElementById('editProfileModal').classList.add('hidden');
+        }
+
+        function handleEditAvatarSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempEditAvatarDataUrl = e.target.result;
+                const preview = document.getElementById('editAvatarPreview');
+                preview.src = tempEditAvatarDataUrl;
+                preview.classList.remove('hidden');
+                document.getElementById('editAvatarPlaceholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function handleUpdateProfile(event) {
+            event.preventDefault();
+            const id = document.getElementById('editProfileIdInput').value;
+            const newName = document.getElementById('editProfileNameInput').value.trim();
+            if (!newName) return;
+
+            try {
+                const metaRef = db.collection("mflow_reports").doc("system_profiles_meta");
+                const doc = await metaRef.get();
+                if (doc.exists) {
+                    let profiles = doc.data().profiles || [];
+                    const profileIndex = profiles.findIndex(p => p.id === id);
+
+                    if (profileIndex !== -1) {
+                        profiles[profileIndex].name = newName;
+                        profiles[profileIndex].avatar = tempEditAvatarDataUrl;
+                        await metaRef.set({ profiles });
+
+                        // อัปเดตข้อมูลบนหน้าจอทันทีหากกำลังใช้งานโปรไฟล์ที่ถูกแก้ไขอยู่
+                        if (currentProfileId === id) {
+                            currentProfileName = newName;
+                            localStorage.setItem('mflow_current_profile_name', newName);
+                            document.getElementById('currentProfileNameBadge').innerText = `โปรไฟล์: ${newName}`;
+                            updateHeaderAvatar(tempEditAvatarDataUrl);
+                        }
+
+                        renderProfileSelectionList(profiles);
+                        showToast('save', 'อัปเดตโปรไฟล์สำเร็จ');
+                    }
+                }
+                closeEditProfileModal();
+            } catch (err) {
+                showToast('error', 'ไม่สามารถอัปเดตโปรไฟล์บน Cloud ได้');
+            }
         }
 
         // ==========================================
@@ -513,22 +646,16 @@
                 
                 if (doc.exists) {
                     let profiles = doc.data().profiles || [];
-                    
-                    // ป้องกันการลบโปรไฟล์สุดท้ายในระบบ
                     if (profiles.length <= 1) {
                         showToast('error', 'ไม่สามารถลบโปรไฟล์สุดท้ายได้');
                         closeDeleteProfileConfirm();
                         return;
                     }
-                    
                     profiles = profiles.filter(p => p.id !== profileToDeleteId);
                     await metaRef.set({ profiles });
                 }
                 
-                // ลบข้อมูลเทมเพลตของโปรไฟล์นี้
                 await db.collection("mflow_reports").doc(`profile_${profileToDeleteId}`).delete();
-                
-                // ล้างข้อมูลจาก LocalStorage
                 localStorage.removeItem(`routine_templates_${profileToDeleteId}`);
                 localStorage.removeItem(`routine_inputs_${profileToDeleteId}`);
                 localStorage.removeItem(`routine_selected_id_${profileToDeleteId}`);
@@ -536,11 +663,10 @@
                 showToast('delete', 'ลบโปรไฟล์สำเร็จ');
                 closeDeleteProfileConfirm();
 
-                // ถ้าระบบกำลังใช้โปรไฟล์ที่ถูกลบอยู่ ให้ทำการ Logout ออกไปหน้าเลือกใหม่
                 if (currentProfileId === profileToDeleteId) {
                     logoutProfile();
                 } else {
-                    showProfileSelector(); // รีเฟรชรายชื่อโปรไฟล์ใหม่
+                    showProfileSelector(); 
                 }
             } catch (err) {
                 showToast('error', 'เกิดข้อผิดพลาดในการลบโปรไฟล์');
@@ -680,20 +806,20 @@
         }
 
         async function saveToCloud() {
-    try {
-        const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
-        await getCloudDocRef().set(data);
-        localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
-        localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
-        showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
-        updateCloudBadge(true, `ซิงค์กับ Cloud (${currentProfileName})`);
-        return true; // <-- เพิ่ม: บ่งบอกว่าออนไลน์และซิงค์สำเร็จ
-    } catch (err) {
-        showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้ (ระบบทำงานแบบออฟไลน์)');
-        updateCloudBadge(false, "ออฟไลน์ (ใช้ Local)"); 
-        return false; // <-- เพิ่ม: บ่งบอกว่าออฟไลน์ ซิงค์ไม่สำเร็จ
-    }
-}
+            try {
+                const data = { templates, inputValuesMap, updatedAt: new Date().toISOString() };
+                await getCloudDocRef().set(data);
+                localStorage.setItem(`routine_templates_${currentProfileId}`, JSON.stringify(templates));
+                localStorage.setItem(`routine_inputs_${currentProfileId}`, JSON.stringify(inputValuesMap));
+                showToast('save', 'บันทึกขึ้น Cloud สำเร็จ!');
+                updateCloudBadge(true, `ซิงค์กับ Cloud (${currentProfileName})`);
+                return true;
+            } catch (err) {
+                showToast('error', 'ไม่สามารถบันทึกขึ้น Cloud ได้ (ระบบทำงานแบบออฟไลน์)');
+                updateCloudBadge(false, "ออฟไลน์ (ใช้ Local)"); 
+                return false;
+            }
+        }
 
         async function saveToCloudSilent() {
             try {
@@ -831,14 +957,11 @@
             const matches = getTemplateMatches(content);
 
             if (matches.length === 0) {
-    container.innerHTML = `<div class="p-4 bg-white/60 rounded-2xl border text-center"><p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน (ไม่มีช่องกรอก)</p></div>`;
-    
-    // อัปเดตข้อมูลไปยังส่วน "ผลลัพธ์พร้อมส่ง" โดยตรง
-    document.getElementById('outputDisplay').value = content;
-    document.getElementById('outputDisplayHTML').innerHTML = escapeHTML(content);
-    
-    return;
-}
+                container.innerHTML = `<div class="p-4 bg-white/60 rounded-2xl border text-center"><p class="font-bold text-slate-700 text-sm">พร้อมใช้งาน (ไม่มีช่องกรอก)</p></div>`;
+                document.getElementById('outputDisplay').value = content;
+                document.getElementById('outputDisplayHTML').innerHTML = escapeHTML(content);
+                return;
+            }
 
             matches.forEach((m, idx) => {
                 const mapKey = getCurrentKey(idx);
@@ -855,7 +978,6 @@
                 } else if (lbl.includes('เวลา') || lbl.includes('time')) {
                     helpers = `<button type="button" onclick="setVal(${idx}, 'time')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">ตอนนี้</button>`;
                 } else if (lbl.includes('คลาสรถ') || lbl.includes('m-flow')) {
-                    // M-Flow Vehicle Class Dropdown requirement
                     helpers = `<button type="button" onclick="setVal(${idx}, 'C1')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C1</button> <button type="button" onclick="setVal(${idx}, 'C2')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C2</button> <button type="button" onclick="setVal(${idx}, 'C3')" class="text-[9px] font-bold bg-white px-2 py-1 rounded-full shadow-sm">C3</button>`;
                 }
 
@@ -942,21 +1064,18 @@
         }
 
         async function backupToCloud() {
-    // ให้บันทึกขึ้น Cloud และรอรับค่าสถานะกลับมา
-    const isCloudSuccess = await saveToCloud();
-    
-    // ยกเว้นกรณีที่มีสถานะไม่ได้เชื่อมต่อกับ Cloud (isCloudSuccess เป็น false) จึงค่อยดาวน์โหลดไฟล์
-    if (!isCloudSuccess) {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ profile: currentProfileName, templates, inputValuesMap }, null, 2));
-        const a = document.createElement('a'); 
-        a.href = dataStr; 
-        a.download = `mflow_${currentProfileId}_backup_${Date.now()}.json`;
-        document.body.appendChild(a); 
-        a.click(); 
-        a.remove();
-        showToast('save', 'ดาวน์โหลดข้อมูลสำรองลงเครื่องแล้ว');
-    }
-}
+            const isCloudSuccess = await saveToCloud();
+            if (!isCloudSuccess) {
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ profile: currentProfileName, templates, inputValuesMap }, null, 2));
+                const a = document.createElement('a'); 
+                a.href = dataStr; 
+                a.download = `mflow_${currentProfileId}_backup_${Date.now()}.json`;
+                document.body.appendChild(a); 
+                a.click(); 
+                a.remove();
+                showToast('save', 'ดาวน์โหลดข้อมูลสำรองลงเครื่องแล้ว');
+            }
+        }
 
         async function triggerImport() {
             try {
